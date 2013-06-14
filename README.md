@@ -6,3 +6,5 @@ dTaiwanTvGuide
 資料來源：開眼電視網
 
 always beta
+
+required ActionBarSherlock lib
