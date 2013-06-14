@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/preview_prev_day"
+        android:icon="@drawable/ic_menu_back"
+        android:title="@string/previous_day">
+    </item>
+    <item
+        android:id="@+id/preview_next_day"
+        android:icon="@drawable/ic_menu_forward"
+        android:title="@string/next_day">
+    </item>
+    <item
+        android:id="@+id/preview_option_expand"
+        android:title="@string/select_expand">
+    </item>
+    <item
+        android:id="@+id/preview_option_group"
+        android:title="@string/select_group">
+    </item>
+    <item
+        android:id="@+id/preference"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="@string/preference">
+    </item>
+
+</menu>

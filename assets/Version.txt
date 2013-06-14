@@ -1,0 +1,32 @@
+電視節目表 by DolphinWing
+https://play.google.com/store/apps/details?id=dolphin.apps.TaiwanTVGuide
+https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
+
+支援功能(最新: 1.1.0)
+● 從開眼電影網下載本日節目表
+● 現正播放以及下一部即將播放的電影
+● 支援IMDb app (if has)
+
+[39] @ 2013-06-01
+
+    new tweak on replay fragment
+    add IMDb app/link support when clicking on English title (if has)
+    remove touchscreen feature requirement
+
+[38] @ 2013-05-31
+
+    remove portrait/landscape feature requirement
+    remove atmovies back link to program detail
+    use 48dp-rhythm
+
+[37] @ 2013-05-31
+
+    fix HTC Butterfly layout incorrect (Thanks Erin Fu)
+    change the background of channel (title)
+    fix WebView search on IMDB website
+
+[36] @ 2013-05-19
+    use Android Studio (IntelliJ 13 Preview) to build this project
+    change a new icon
+        need to create a new one for 512x512, so I change a new one
+    release to beta channel (make it as 1.0.0)

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/TextViewUrl"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:drawableLeft="@drawable/atmovies_logo"
+        android:padding="8dp"
+        android:text="@string/atmovies_tv"
+        android:textColor="#68f"
+        android:textSize="22sp"
+        android:gravity="bottom"/>
+
+
+    <!-- android:textColor="#68f" -->
+
+    <ListView
+        android:id="@+id/listViewTimeList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </ListView>
+
+    <TextView
+        android:id="@+id/TextViewData"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/no_data"
+        android:textSize="22sp">
+    </TextView>
+
+    <TextView
+        android:id="@+id/TextViewTitleEng"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/no_data"
+        android:textColor="#fff"
+        android:textSize="18sp"
+        android:visibility="visible"
+        android:drawableLeft="@drawable/imdb"
+        android:paddingStart="8dp"
+        android:paddingLeft="8dp"
+        android:paddingTop="4dp"
+        android:paddingRight="4dp"
+        android:paddingBottom="8dp">
+    </TextView>
+
+</LinearLayout>

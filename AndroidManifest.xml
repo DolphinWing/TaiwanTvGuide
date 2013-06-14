@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="dolphin.apps.TaiwanTVGuide"
+          android:versionCode="39"
+          android:versionName="1.1.0">
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="14"/>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <uses-feature
+        android:name="android.hardware.screen.portrait"
+        android:required="false"/>
+    <uses-feature
+        android:name="android.hardware.screen.landscape"
+        android:required="false"/>
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false"/>
+
+    <application
+        android:icon="@drawable/tv"
+        android:label="@string/app_name">
+        <activity
+            android:name=".TVGuidePreview"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="TVGuideProgram"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="TVGuidePreference"
+            android:label="@string/preference"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="TVGuidePlaying"
+            android:screenOrientation="portrait">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity android:name="TVGuideWebView">
+        </activity>
+        <activity
+            android:name=".abs.TVGuideNowPlayingAB"
+            android:label="@string/now_playing"
+            android:screenOrientation="nosensor"
+            android:uiOptions="splitActionBarWhenNarrow">
+
+            <!--
+            [30] add splash screen activity
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity
+            android:name=".abs.TVGuidePreviewAB"
+            android:label="@string/guide_list"
+            android:screenOrientation="nosensor"
+            android:uiOptions="splitActionBarWhenNarrow">
+        </activity>
+        <activity
+            android:name=".abs.TVGuideProgramABF"
+            android:screenOrientation="nosensor">
+        </activity>
+        <activity
+            android:name=".abs.SplashActivity"
+            android:theme="@style/Theme.Sherlock.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

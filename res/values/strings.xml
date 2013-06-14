@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">電視節目表</string>
+    <string name="select_group">頻道類別</string>
+    <string name="select_expand">展開/摺疊</string>
+    <string name="loading">載入中</string>
+    <string name="previous_day">前一日</string>
+    <string name="next_day">後一日</string>
+    <string name="no_data">無相關資料</string>
+    <string name="preference">設置</string>
+    <string name="no_network">無網路連接或網頁無回應</string>
+    <string name="retry">重試</string>
+    <string name="abort">取消</string>
+    <string name="open_wifi_setup">Wi-Fi 設置</string>
+    <string name="now_playing">現正播映</string>
+    <string name="guide_list">今日節目表</string>
+    <string name="build_information">版本資訊</string>
+    <string name="pref_expand_all">展開所有頻道</string>
+    <string name="pref_expand_all_summary_on">直接展開所有頻道</string>
+    <string name="pref_expand_all_summary_off">不展開所有頻道</string>
+    <string name="pref_show_today_all">顯示今日所有節目</string>
+    <string name="pref_show_today_all_summary_on">顯示今天所有的節目</string>
+    <string name="pref_show_today_all_summary_off">只顯示接下來能看的節目</string>
+    <string name="pref_default_group">預設頻道類別</string>
+    <string name="pref_default_group_summary">開啟程式時，預設選取的頻道類別</string>
+    <string name="atmovies_tv">開眼電視網</string>
+    <string name="recent_replays">最近重播時間</string>
+    <string name="refresh">刷新</string>
+    <string name="guide_intro">節目介紹</string>
+
+</resources>

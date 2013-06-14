@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <ExpandableListView
+        android:id="@+id/ExpandableListViewGuideList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+    </ExpandableListView>
+
+    <include
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        layout="@layout/fullscreen_loading_indicator"
+        android:visibility="gone" >
+    </include>
+
+    <Spinner
+        android:id="@+id/SpinnerGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:entries="@array/channel_group"
+        android:visibility="invisible" >
+    </Spinner>
+
+    <TextView
+        android:id="@+id/TextViewData"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/no_data"
+        android:textSize="22sp" >
+    </TextView>
+
+</LinearLayout>

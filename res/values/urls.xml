@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    
+<string name="url_group_guide">attv.cfm?action=todaytime&amp;tday=@date&amp;group_id=@group#@channel</string>
+
+
+
+
+
+
+
+
+
+
+
+<string name="url_showtime">attv.cfm?action=showtime&amp;groupid=@group</string>
+<string name="url_channel_time">attv.cfm?action=channeltime&amp;channel_id=@channel&amp;tday=@date</string>
+</resources>
