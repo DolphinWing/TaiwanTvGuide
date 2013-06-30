@@ -19,7 +19,7 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:paddingRight="8dp"
-        android:background="@drawable/abs__ab_bottom_solid_dark_holo"></TextView>
+        android:background="@drawable/ab_stacked_solid_holo_orange_dark"></TextView>
 
 
 </LinearLayout>

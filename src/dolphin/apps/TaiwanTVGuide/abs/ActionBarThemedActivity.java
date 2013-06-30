@@ -25,7 +25,8 @@ public class ActionBarThemedActivity extends SherlockActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		setTheme(R.style.Theme_Sherlock);
+		//[40]-- setTheme(R.style.Theme_Sherlock);
+        setTheme(R.style.Theme_Holo_orange_dark);
 		super.onCreate(savedInstanceState);
 
 		//This has to be called before setContentView and you must use the

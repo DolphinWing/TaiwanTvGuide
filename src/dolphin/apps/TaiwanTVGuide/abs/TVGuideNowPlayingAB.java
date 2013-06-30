@@ -31,7 +31,7 @@ public class TVGuideNowPlayingAB extends TVGuideListActionBarThemedActivity
         menu.add(Menu.NONE, R.id.playing_option_view_list, 0, R.string.guide_list)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         menu.add(Menu.NONE, R.id.program_option_refresh, 0, R.string.refresh)
-                .setIcon(R.drawable.ic_menu_refresh)
+                .setIcon(R.drawable.ic_action_refresh)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         return super.onCreateOptionsMenu(menu);
     }

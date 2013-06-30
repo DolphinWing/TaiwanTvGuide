@@ -5,7 +5,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
@@ -15,109 +18,130 @@ import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
 
 public class TVGuideProgramABF extends SherlockFragmentActivity implements
-		TVGuideProgramFragment.OnProgramDataListenter
-{
-	public final static String TAG = "TVGuideProgramABF";
+        TVGuideProgramFragment.OnProgramDataListenter {
+    public final static String TAG = "TVGuideProgramABF";
 
-	TabHost mTabHost;
-	ViewPager mViewPager;
-	MyTabsAdapter mTabsAdapter;
+    TabHost mTabHost;
+    ViewPager mViewPager;
+    MyTabsAdapter mTabsAdapter;
 
-	/** Called when the activity is first created. */
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
+    /**
+     * Called when the activity is first created.
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.Theme_Holo_orange_dark);//[40]++
+        super.onCreate(savedInstanceState);
 
-		//This has to be called before setContentView and you must use the
-		//class in com.actionbarsherlock.view and NOT android.view
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        //This has to be called before setContentView and you must use the
+        //class in com.actionbarsherlock.view and NOT android.view
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
-		//		getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		//		//The following two options trigger the collapsing of the main action bar view.
-		//		//See the parent activity for the rest of the implementation
-		//		getSupportActionBar().setDisplayShowHomeEnabled(false);
-		//		getSupportActionBar().setDisplayShowTitleEnabled(false);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        //		getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        //		//The following two options trigger the collapsing of the main action bar view.
+        //		//See the parent activity for the rest of the implementation
+        //		getSupportActionBar().setDisplayShowHomeEnabled(false);
+        //		getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-		setContentView(R.layout.fragment_tabs_pager);
-		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
-		mTabHost.setup();
+        setContentView(R.layout.fragment_tabs_pager);
+        mTabHost = (TabHost) findViewById(android.R.id.tabhost);
+        mTabHost.setup();
 
-		mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
 
-		mTabsAdapter = new MyTabsAdapter(this, mTabHost, mViewPager);
+        mTabsAdapter = new MyTabsAdapter(this, mTabHost, mViewPager);
 
-		mTabsAdapter.addTab(
-			mTabHost.newTabSpec("guide_intro").setIndicator(
-				getString(R.string.guide_intro)),
-			TVGuideProgramFragment.class, getIntent().getExtras());
-		mTabsAdapter.addTab(
-			mTabHost.newTabSpec("recent_replays").setIndicator(
-				getString(R.string.recent_replays)),
-			TVGuideProgramRecentReplaysFragment.class, null);
-		//mTabsAdapter.addTab(
-		//	mTabHost.newTabSpec("imdb").setIndicator("IMDB"),
-		//	TVGuideWebViewFragment.class, null);
+        //[Android] Custom TabHost Style
+        //http://www.dotblogs.com.tw/alonstar/archive/2012/04/18/android_tabhost.aspx
+        //How to change tab style in Android?
+        //http://stackoverflow.com/a/3029300
+//		mTabsAdapter.addTab(
+//			mTabHost.newTabSpec("guide_intro").setIndicator(
+//				getString(R.string.guide_intro)),
+//			TVGuideProgramFragment.class, getIntent().getExtras());
+        mTabsAdapter.addTab(mTabHost.newTabSpec("guide_intro")
+                .setIndicator(createTabIndicator(R.string.guide_intro)),
+                //getString(R.string.title_file_location_local)),
+                TVGuideProgramFragment.class, null);
 
-		if (savedInstanceState != null) {
-			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
-		}
-	}
+//		mTabsAdapter.addTab(
+//			mTabHost.newTabSpec("recent_replays").setIndicator(
+//				getString(R.string.recent_replays)),
+//			TVGuideProgramRecentReplaysFragment.class, null);
+        mTabsAdapter.addTab(mTabHost.newTabSpec("recent_replays")
+                .setIndicator(createTabIndicator(R.string.recent_replays)),
+                //getString(R.string.title_file_location_local)),
+                TVGuideProgramRecentReplaysFragment.class, null);
+        //mTabsAdapter.addTab(
+        //	mTabHost.newTabSpec("imdb").setIndicator("IMDB"),
+        //	TVGuideWebViewFragment.class, null);
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState)
-	{
-		if (outState != null) {//create a new object for save state
-			//	outState = new Bundle();
-			//}
-			//else {
-			super.onSaveInstanceState(outState);//save current tab
-			outState.putString("tab", mTabHost.getCurrentTabTag());
-		}
-	}
+        if (savedInstanceState != null) {
+            mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
+        }
+    }
 
-	protected void close_program()
-	{
-		this.finish();
-	}
+    private View createTabIndicator(int titleResId) {
+        return createTabIndicator(titleResId, 0);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		if (item.getItemId() == android.R.id.home) {
-			onBackPressed();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    private View createTabIndicator(int titleResId, int iconResId) {
+        View tabInd = LayoutInflater.from(this).inflate(R.layout.tab_indicator_holo, null);
+        tabInd.setBackgroundResource(R.drawable.tab_indicator_ab_holo_orange_dark);
+        ((TextView) tabInd.findViewById(android.R.id.title)).setText(R.string.recent_replays);
+        tabInd.setMinimumHeight(72);
+        return tabInd;
+    }
 
-	private String getFragmentTag(int pos)
-	{
-		return "android:switcher:" + R.id.pager + ":" + pos;
-	}
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (outState != null) {//create a new object for save state
+            //	outState = new Bundle();
+            //}
+            //else {
+            super.onSaveInstanceState(outState);//save current tab
+            outState.putString("tab", mTabHost.getCurrentTabTag());
+        }
+    }
 
-	@Override
-	public void onDataReceived(ProgramItem progItem)
-	{
-		//Log.d(TAG, "mTabsAdapter " + mTabsAdapter.getCount());
-		//Log.d(TAG, "  " + mTabsAdapter.getItem(1).toString());
-		//get recent_replay tab and set replay data
-		if (progItem != null) {
-			Log.d(TAG, "onDataReceived " + progItem.Replays.size());
-			//http://goo.gl/T0AXV
-			FragmentManager fmgr = getSupportFragmentManager();
-			if (fmgr != null) {
-				FragmentTransaction trans = fmgr.beginTransaction();
-				TVGuideFragment frag =
-					(TVGuideFragment) fmgr.findFragmentByTag(getFragmentTag(1));
-				frag.updateView(progItem);
-				//frag =
-				//	(TVGuideFragment) fmgr.findFragmentByTag(getFragmentTag(2));
-				//if (frag != null)
-				//	frag.updateView(progItem);
-				trans.commit();
-			}
-		}
-	}
+    protected void close_program() {
+        this.finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private String getFragmentTag(int pos) {
+        return "android:switcher:" + R.id.pager + ":" + pos;
+    }
+
+    @Override
+    public void onDataReceived(ProgramItem progItem) {
+        //Log.d(TAG, "mTabsAdapter " + mTabsAdapter.getCount());
+        //Log.d(TAG, "  " + mTabsAdapter.getItem(1).toString());
+        //get recent_replay tab and set replay data
+        if (progItem != null) {
+            Log.d(TAG, "onDataReceived " + progItem.Replays.size());
+            //http://goo.gl/T0AXV
+            FragmentManager fmgr = getSupportFragmentManager();
+            if (fmgr != null) {
+                FragmentTransaction trans = fmgr.beginTransaction();
+                TVGuideFragment frag =
+                        (TVGuideFragment) fmgr.findFragmentByTag(getFragmentTag(1));
+                frag.updateView(progItem);
+                //frag =
+                //	(TVGuideFragment) fmgr.findFragmentByTag(getFragmentTag(2));
+                //if (frag != null)
+                //	frag.updateView(progItem);
+                trans.commit();
+            }
+        }
+    }
 }

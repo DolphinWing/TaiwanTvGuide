@@ -451,7 +451,8 @@ public abstract class TVGuideListActionBarThemedActivity extends
     {
         mOptionMenu = menu;//store for loading use
         menu.add(Menu.NONE, R.id.preference, 0, R.string.preference)
-                .setIcon(android.R.drawable.ic_menu_preferences)
+                //[40]--.setIcon(android.R.drawable.ic_menu_preferences)
+                .setIcon(R.drawable.ic_action_preference)
                 .setShowAsAction(
                     MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         //[32] not always show preference icon for MS2

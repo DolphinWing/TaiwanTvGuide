@@ -2,26 +2,29 @@
 
     <item
         android:id="@+id/preview_prev_day"
-        android:icon="@drawable/ic_menu_back"
+        android:icon="@drawable/ic_action_nav_prev"
         android:title="@string/previous_day">
     </item>
     <item
         android:id="@+id/preview_next_day"
-        android:icon="@drawable/ic_menu_forward"
+        android:icon="@drawable/ic_action_nav_next"
         android:title="@string/next_day">
+
     </item>
     <item
         android:id="@+id/preview_option_expand"
         android:title="@string/select_expand">
     </item>
+
     <item
         android:id="@+id/preview_option_group"
         android:title="@string/select_group">
     </item>
+
     <item
         android:id="@+id/preference"
-        android:icon="@android:drawable/ic_menu_preferences"
+        android:icon="@drawable/ic_action_preference"
         android:title="@string/preference">
     </item>
-
+    <!-- android:icon="@android:drawable/ic_menu_preferences" -->
 </menu>

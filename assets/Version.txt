@@ -2,10 +2,15 @@
 https://play.google.com/store/apps/details?id=dolphin.apps.TaiwanTVGuide
 https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 
-支援功能(最新: 1.1.0)
+支援功能(最新: 1.2.0)
 ● 從開眼電影網下載本日節目表
 ● 現正播放以及下一部即將播放的電影
 ● 支援IMDb app (if has)
+
+[41] @ 2013-06-30
+[40] @ 2013-06-30
+
+    change the theme style and icon
 
 [39] @ 2013-06-01
 

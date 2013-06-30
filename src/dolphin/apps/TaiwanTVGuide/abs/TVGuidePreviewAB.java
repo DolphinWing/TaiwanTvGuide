@@ -38,15 +38,19 @@ public class TVGuidePreviewAB extends TVGuideListActionBarThemedActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
         menu.add(Menu.NONE, R.id.preview_prev_day, 0, R.string.previous_day)
-                .setIcon(android.R.drawable.ic_media_previous)//.setIcon(R.drawable.ic_menu_back)
+                //.setIcon(R.drawable.ic_menu_back)
+                //[40]--.setIcon(android.R.drawable.ic_media_previous)
+                .setIcon(R.drawable.ic_action_nav_prev)
                 .setShowAsAction(
                     MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         menu.add(Menu.NONE, R.id.program_option_refresh, 0, R.string.refresh)
-                .setIcon(R.drawable.ic_menu_refresh)
+                .setIcon(R.drawable.ic_action_refresh)
                 .setShowAsAction(
                     MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         menu.add(Menu.NONE, R.id.preview_next_day, 0, R.string.next_day)
-                .setIcon(android.R.drawable.ic_media_next)//.setIcon(R.drawable.ic_menu_forward)
+                //.setIcon(R.drawable.ic_menu_forward)
+                //[40]--.setIcon(android.R.drawable.ic_media_next)
+                .setIcon(R.drawable.ic_action_nav_next)
                 .setShowAsAction(
                     MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         return super.onCreateOptionsMenu(menu);//true;
