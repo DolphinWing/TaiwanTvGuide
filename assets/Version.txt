@@ -2,10 +2,21 @@
 https://play.google.com/store/apps/details?id=dolphin.apps.TaiwanTVGuide
 https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 
-支援功能(最新: 1.2.0)
+支援功能(最新: 1.2.2)
 ● 從開眼電影網下載本日節目表
 ● 現正播放以及下一部即將播放的電影
 ● 支援IMDb app (if has)
+
+[43] @ 2013-07-10
+    fix tab indicator height
+        http://stackoverflow.com/a/8296074
+        http://goo.gl/HxKF
+    adjust the channel layout and color
+	change WebViewActivity theme to NoActionBar
+
+[42] @ 2013-07-10
+    adjust the layout and theme color
+    fix large screen refresh button will show text when available
 
 [41] @ 2013-06-30
 [40] @ 2013-06-30

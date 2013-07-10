@@ -25,7 +25,7 @@
         <item name="dropDownListViewStyle">@style/DropDownListView.Holo_orange_dark</item>
         <item name="actionBarTabStyle">@style/ActionBarTabStyle.Holo_orange_dark</item>
         <item name="actionDropDownStyle">@style/DropDownNav.Holo_orange_dark</item>
-        <item name="actionBarStyle">@style/ActionBar.Transparent.Holo_orange_dark</item>
+        <item name="actionBarStyle">@style/ActionBar.Solid.Holo_orange_dark</item>
         <item name="actionModeBackground">@drawable/cab_background_top_holo_orange_dark</item>
         <item name="actionModeSplitBackground">@drawable/cab_background_bottom_holo_orange_dark</item>
         <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Holo_orange_dark</item>

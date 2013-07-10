@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TabHost;
@@ -88,9 +89,12 @@ public class TVGuideProgramABF extends SherlockFragmentActivity implements
 
     private View createTabIndicator(int titleResId, int iconResId) {
         View tabInd = LayoutInflater.from(this).inflate(R.layout.tab_indicator_holo, null);
-        tabInd.setBackgroundResource(R.drawable.tab_indicator_ab_holo_orange_dark);
+        //tabInd.setBackgroundResource(R.drawable.tab_indicator_ab_holo_orange_dark);
+        tabInd.setBackgroundResource(R.drawable.tab_indicator_holo);
         ((TextView) tabInd.findViewById(android.R.id.title)).setText(R.string.recent_replays);
-        tabInd.setMinimumHeight(72);
+        // http://stackoverflow.com/a/8296074
+        tabInd.setMinimumHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                48.0f, getResources().getDisplayMetrics()));
         return tabInd;
     }
 
