@@ -91,10 +91,10 @@ public class TVGuideProgramABF extends SherlockFragmentActivity implements
         View tabInd = LayoutInflater.from(this).inflate(R.layout.tab_indicator_holo, null);
         //tabInd.setBackgroundResource(R.drawable.tab_indicator_ab_holo_orange_dark);
         tabInd.setBackgroundResource(R.drawable.tab_indicator_holo);
-        ((TextView) tabInd.findViewById(android.R.id.title)).setText(R.string.recent_replays);
+        ((TextView) tabInd.findViewById(android.R.id.title)).setText(titleResId);
         // http://stackoverflow.com/a/8296074
         tabInd.setMinimumHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                48.0f, getResources().getDisplayMetrics()));
+                56.0f, getResources().getDisplayMetrics()));
         return tabInd;
     }
 

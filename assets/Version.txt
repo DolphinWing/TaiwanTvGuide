@@ -7,6 +7,17 @@ https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 ● 現正播放以及下一部即將播放的電影
 ● 支援IMDb app (if has)
 
+[45] @ 2013-07-15
+    java.lang.NullPointerException
+        at dolphin.apps.TaiwanTVGuide.abs.i.a(Unknown Source)
+        at dolphin.apps.TaiwanTVGuide.abs.i.a(Unknown Source)
+        at dolphin.apps.TaiwanTVGuide.abs.j.handleMessage(Unknown Source)
+        at android.os.Handler.dispatchMessage(Handler.java:99)
+
+[44] @ 2013-07-11
+    fix tab indicator title
+    hide IMDB link when no English for query
+
 [43] @ 2013-07-10
     fix tab indicator height
         http://stackoverflow.com/a/8296074

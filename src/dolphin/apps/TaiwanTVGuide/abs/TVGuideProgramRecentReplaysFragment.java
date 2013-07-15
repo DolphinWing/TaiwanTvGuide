@@ -34,6 +34,7 @@ public class TVGuideProgramRecentReplaysFragment extends TVGuideFragment {
     private ListView mReplayList = null;
     private TextView mEngTitle = null;
     private ProgramItem progItem = null;
+    private View imdbView = null;//[44]++
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,6 +53,7 @@ public class TVGuideProgramRecentReplaysFragment extends TVGuideFragment {
         mReplayList.setEmptyView(view.findViewById(R.id.TextViewData));
         mEngTitle = (TextView) view.findViewById(R.id.TextViewTitleEng);
         mEngTitle.setOnClickListener(onEnglishTitleClicked);
+        imdbView = view.findViewById(R.id.imdbLink);//[44]++
         //updateTime(null);
         return view;
     }
@@ -67,7 +69,7 @@ public class TVGuideProgramRecentReplaysFragment extends TVGuideFragment {
 
     @Override
     public void updateView(ProgramItem pItem) {
-        Log.d(TAG, "updateTime");
+        //Log.d(TAG, "updateTime");
         progItem = pItem;
 
         List<String> replays = new ArrayList<String>();
@@ -78,11 +80,10 @@ public class TVGuideProgramRecentReplaysFragment extends TVGuideFragment {
 
             for (int i = 0; i < progItem.Replays.size(); i++) {
                 Calendar cal = progItem.Replays.get(i);
-                str =
-                        String.format("%02d/%02d %02d:%02d",
-                                cal.get(Calendar.MONTH) + 1,
-                                cal.get(Calendar.DAY_OF_MONTH),
-                                cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+                str = String.format("%02d/%02d  %02d:%02d",
+                        cal.get(Calendar.MONTH) + 1,
+                        cal.get(Calendar.DAY_OF_MONTH),
+                        cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
                 //str += "\n";
                 replays.add(str);
             }
@@ -104,9 +105,13 @@ public class TVGuideProgramRecentReplaysFragment extends TVGuideFragment {
             SpannableString content = new SpannableString(engTitle);
             content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
 
-            mEngTitle.setText(content);
-            mEngTitle.setTag(engTitle);
-            mEngTitle.setVisibility(View.VISIBLE);
+            if (mEngTitle != null) {//[45]++ avoid NullPointerException
+                mEngTitle.setText(content);
+                mEngTitle.setTag(engTitle);
+                mEngTitle.setVisibility(View.VISIBLE);
+            }
+        } else if (imdbView != null) {
+            imdbView.setVisibility(View.GONE);//[44]++
         }
 
         //		if (mRecentReplays != null)
@@ -118,9 +123,8 @@ public class TVGuideProgramRecentReplaysFragment extends TVGuideFragment {
 
                 @Override
                 public void onClick(View view) {
-                    String url =
-                            getActivity().getIntent().getExtras()
-                                    .getString(AtMoviesTVHttpHelper.KEY_TVDATA);
+                    String url = getActivity().getIntent().getExtras()
+                            .getString(AtMoviesTVHttpHelper.KEY_TVDATA);
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     i.setData(Uri.parse(String.format("%s/%s",
@@ -179,9 +183,8 @@ public class TVGuideProgramRecentReplaysFragment extends TVGuideFragment {
      * @return
      */
     public static boolean isCallable(Context context, Intent intent) {
-        List<ResolveInfo> list =
-                context.getPackageManager().queryIntentActivities(intent,
-                        PackageManager.MATCH_DEFAULT_ONLY);
+        List<ResolveInfo> list = context.getPackageManager()
+                .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
     }
 }
