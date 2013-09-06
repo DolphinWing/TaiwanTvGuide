@@ -21,6 +21,12 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+
 import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.TVGuidePreference;
 import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
@@ -28,62 +34,52 @@ import dolphin.apps.TaiwanTVGuide.provider.ChannelItem;
 import dolphin.apps.TaiwanTVGuide.provider.GuideExpandableListAdapter;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-
-public abstract class TVGuideListActionBarThemedActivity extends
-        ActionBarThemedActivity
-        implements ActionBar.OnNavigationListener
-{
+public abstract class TVGuideListActionBarThemedActivity
+        extends ActionBarThemedActivity
+        implements ActionBar.OnNavigationListener {
     public final static String TAG = "ActionBarThemedActivity";
     private String[] mGroups;
 
-    public String[] getChannelGroups()
-    {
+    public String[] getChannelGroups() {
         return mGroups;
     }
 
-    public String getChannelGroup(int pos)
-    {
+    public String getChannelGroup(int pos) {
         String[] groups = getChannelGroups();
         return groups[pos];
     }
 
     private Calendar mPreviewDate;
 
-    public Calendar getPreviewDate()
-    {
+    public Calendar getPreviewDate() {
         return mPreviewDate;
     }
 
-    public String getPreviewDateString()
-    {
+    public String getPreviewDateString() {
         return String.format("%4d/%02d/%02d",
-            getPreviewDate().get(Calendar.YEAR),
-            getPreviewDate().get(Calendar.MONTH) + 1,
-            getPreviewDate().get(Calendar.DAY_OF_MONTH));
+                getPreviewDate().get(Calendar.YEAR),
+                getPreviewDate().get(Calendar.MONTH) + 1,
+                getPreviewDate().get(Calendar.DAY_OF_MONTH));
     }
 
-    public String getPreviewDateTimeSpanString()
-    {
+    public String getPreviewDateTimeSpanString() {
         Calendar now = Calendar.getInstance();
         Calendar cal = getPreviewDate();
         if (DateUtils.isToday(cal.getTimeInMillis())) {//assuem the same date
             return getString(R.string.guide_list);
             //DateUtils.formatSameDayTime(cal.getTimeInMillis(), now.getTimeInMillis(),
             //    DateFormat.FULL, DateFormat.SHORT).toString();
-        } //else {
+        }
 
         //Locale.setDefault(Locale.TAIWAN);
-        return DateUtils.getRelativeTimeSpanString(cal.getTimeInMillis(),
-            now.getTimeInMillis(), DateUtils.DAY_IN_MILLIS).toString();
-        //}
+        //[46]++ add DAY_OF_WEEK
+        return new SimpleDateFormat("EEEE", Locale.TAIWAN).format(cal.getTime());
+        //[46]--
+        //+ "  " + DateUtils.getRelativeTimeSpanString(cal.getTimeInMillis(),
+        //        now.getTimeInMillis(), DateUtils.HOUR_IN_MILLIS).toString();
     }
 
-    public void addPreviewDate(int day)
-    {
+    public void addPreviewDate(int day) {
         mPreviewDate.add(Calendar.HOUR_OF_DAY, day * 24);
     }
 
@@ -100,10 +96,11 @@ public abstract class TVGuideListActionBarThemedActivity extends
 
     protected Thread threadUpdateContent;
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         send_message(EVENT_MSG_INIT, 0, 0, 200);
 
@@ -113,12 +110,11 @@ public abstract class TVGuideListActionBarThemedActivity extends
         config.locale = Locale.TAIWAN;
         Locale.setDefault(config.locale);
         getBaseContext().getResources().updateConfiguration(config,
-            getBaseContext().getResources().getDisplayMetrics());
+                getBaseContext().getResources().getDisplayMetrics());
         Log.d(TAG, config.locale.getDisplayCountry(Locale.US));
     }
 
-    private void _init()
-    {
+    private void _init() {
         setContentView(R.layout.main);
 
         mHelper = new AtMoviesTVHttpHelper(this);
@@ -137,8 +133,8 @@ public abstract class TVGuideListActionBarThemedActivity extends
 
         getSActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         ArrayAdapter<CharSequence> list =
-            ArrayAdapter.createFromResource(context, R.array.channel_group,
-                R.layout.sherlock_spinner_item);
+                ArrayAdapter.createFromResource(context, R.array.channel_group,
+                        R.layout.sherlock_spinner_item);
         list.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
         getSActionBar().setListNavigationCallbacks(list, this);
 
@@ -149,7 +145,7 @@ public abstract class TVGuideListActionBarThemedActivity extends
         }
         try {// [1.2.0.12]dolphin++ use current playing page group
             group_index =
-                getIntent().getExtras().getInt(AtMoviesTVHttpHelper.KEY_GROUP, group_index);
+                    getIntent().getExtras().getInt(AtMoviesTVHttpHelper.KEY_GROUP, group_index);
         } catch (Exception e) {
             Log.e(TAG, "group_index: " + e.getMessage());
         }
@@ -160,8 +156,7 @@ public abstract class TVGuideListActionBarThemedActivity extends
     }
 
     @Override
-    public boolean onNavigationItemSelected(int pos, long id)
-    {
+    public boolean onNavigationItemSelected(int pos, long id) {
         //Log.d(TAG, String.format("%d: %s", pos, mGroups[pos]));
         show_loading(true);
         send_message(EVENT_MSG_UPDATE_DATA, pos, 1, 100);
@@ -176,8 +171,7 @@ public abstract class TVGuideListActionBarThemedActivity extends
     public final static int EVENT_MSG_UPDATE_DATA = 10022;
     private final static int EVENT_MSG_INIT = 20001;
 
-    public void send_message(int what, int arg1, int arg2, int delayMillis)
-    {
+    public void send_message(int what, int arg1, int arg2, int delayMillis) {
         Message msg = mHandler.obtainMessage(what, arg1, arg2);
         if (delayMillis > 0 && msg != null) {
             mHandler.sendMessageDelayed(msg, delayMillis);
@@ -188,8 +182,7 @@ public abstract class TVGuideListActionBarThemedActivity extends
 
     private Handler mHandler = new Handler() {
         @Override
-        public void handleMessage(Message msg)
-        {
+        public void handleMessage(Message msg) {
             switch (msg.what) {
                 case EVENT_MSG_INIT:
                     _init();
@@ -220,16 +213,14 @@ public abstract class TVGuideListActionBarThemedActivity extends
         }
     };
 
-    protected void show_toast_program(int groupPosition, int childPosition)
-    {
+    protected void show_toast_program(int groupPosition, int childPosition) {
         ChannelItem chan = mChannelList.get(groupPosition);
         ProgramItem prog = chan.Programs.get(childPosition);
         Toast.makeText(this, prog.Url, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void show_loading(boolean bShown)
-    {
+    public void show_loading(boolean bShown) {
         // Android Market Loading effect
         // http://blog.lytsing.org/archives/46.html
         mLoadingLayout.setVisibility(bShown ? View.VISIBLE : View.GONE);
@@ -238,19 +229,21 @@ public abstract class TVGuideListActionBarThemedActivity extends
 
         if (mOptionMenu != null) {//[31]++
             MenuItem r = mOptionMenu.findItem(R.id.program_option_refresh);
-            if (r != null)
+            if (r != null) {
                 r.setEnabled(!bShown);
+                if (getResources().getBoolean(R.bool.i_am_tablet))
+                    r.setVisible(!bShown);
+            }
         }
 
         super.show_loading(bShown);
     }
 
-    protected void get_channel_list(int position, boolean bUseThread)
-    {
+    protected void get_channel_list(int position, boolean bUseThread) {
         if (bUseThread) {// [1.2.0.9]dolphin++ use thread
             try {
                 if (threadUpdateContent != null
-                    && threadUpdateContent.isAlive()) {
+                        && threadUpdateContent.isAlive()) {
                     // threadUpdateContent.stop();
                     threadUpdateContent.interrupt();
                     threadUpdateContent = null;
@@ -259,8 +252,7 @@ public abstract class TVGuideListActionBarThemedActivity extends
                 Log.e(TAG, "thread! " + e.getMessage());
             }
             threadUpdateContent = new Thread(new Runnable() {
-                public void run()
-                {
+                public void run() {
                     //int pos = mSpinnerGroup.getSelectedItemPosition();
                     ActionBar actionBar = (ActionBar) getSupportActionBar();
                     int pos = actionBar.getSelectedNavigationIndex();
@@ -278,15 +270,13 @@ public abstract class TVGuideListActionBarThemedActivity extends
 
     abstract protected void update_data(int position);
 
-    protected void add_channel_item(List<String> item, ProgramItem prog)
-    {
+    protected void add_channel_item(List<String> item, ProgramItem prog) {
         item.add(String.format("%02d:%02d  %s",
-            prog.Date.get(Calendar.HOUR_OF_DAY),
-            prog.Date.get(Calendar.MINUTE), prog.Name));
+                prog.Date.get(Calendar.HOUR_OF_DAY),
+                prog.Date.get(Calendar.MINUTE), prog.Name));
     }
 
-    protected void update_channel_list(int position, boolean bUpdate)
-    {
+    protected void update_channel_list(int position, boolean bUpdate) {
         //		String group_name = mGroups[position];
         // String group_id = group_name.split(" ")[1];
         Log.d(TAG, String.format("update_channel_list %d", position));
@@ -305,7 +295,7 @@ public abstract class TVGuideListActionBarThemedActivity extends
         if (mChannelList.size() > 0) {
             Calendar now = Calendar.getInstance();
             Log.d(TAG, String.format("NOW: %02d:%02d",
-                now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE)));
+                    now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE)));
             List<String> group = new ArrayList<String>();
             List<List<String>> child = new ArrayList<List<String>>();
             for (int i = 0; i < mChannelList.size(); i++) {
@@ -314,10 +304,9 @@ public abstract class TVGuideListActionBarThemedActivity extends
 
                 List<String> item = new ArrayList<String>();
                 if (!mShowTodayAll
-                    && now.get(Calendar.YEAR) == mPreviewDate.get(Calendar.YEAR)
-                    && mPreviewDate.get(Calendar.MONTH) == now.get(Calendar.MONTH)
-                    && now.get(Calendar.DAY_OF_MONTH) == mPreviewDate.get(Calendar.DAY_OF_MONTH))
-                {
+                        && now.get(Calendar.YEAR) == mPreviewDate.get(Calendar.YEAR)
+                        && mPreviewDate.get(Calendar.MONTH) == now.get(Calendar.MONTH)
+                        && now.get(Calendar.DAY_OF_MONTH) == mPreviewDate.get(Calendar.DAY_OF_MONTH)) {
                     boolean bAfterProgram = false;
                     for (int j = 1; j < chan.Programs.size(); j++) {
                         ProgramItem prog = chan.Programs.get(j);
@@ -355,60 +344,56 @@ public abstract class TVGuideListActionBarThemedActivity extends
         show_loading(false);
     }
 
-    protected void onChannelListUpdated()
-    {
+    protected void onChannelListUpdated() {
     }
 
     private ExpandableListView.OnChildClickListener OnChildClick =
-        new ExpandableListView.OnChildClickListener() {
+            new ExpandableListView.OnChildClickListener() {
 
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v,
-                    int groupPosition, int childPosition, long id)
-            {
-                Intent intent = new Intent();
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setClass(TVGuideListActionBarThemedActivity.this,
-                    TVGuideProgramABF.class);
+                @Override
+                public boolean onChildClick(ExpandableListView parent, View v,
+                                            int groupPosition, int childPosition, long id) {
+                    Intent intent = new Intent();
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setClass(TVGuideListActionBarThemedActivity.this,
+                            TVGuideProgramABF.class);
 
-                intent.putExtra(
-                    AtMoviesTVHttpHelper.KEY_DATE,
-                    String.format("%04d-%02d-%02d",
-                        mPreviewDate.get(Calendar.YEAR),
-                        mPreviewDate.get(Calendar.MONTH) + 1,
-                        mPreviewDate.get(Calendar.DAY_OF_MONTH)));
+                    intent.putExtra(
+                            AtMoviesTVHttpHelper.KEY_DATE,
+                            String.format("%04d-%02d-%02d",
+                                    mPreviewDate.get(Calendar.YEAR),
+                                    mPreviewDate.get(Calendar.MONTH) + 1,
+                                    mPreviewDate.get(Calendar.DAY_OF_MONTH)));
 
-                ChannelItem chan = mChannelList.get(groupPosition);
-                if (chan != null) {
-                    intent.putExtra(AtMoviesTVHttpHelper.KEY_GROUP, chan.Group);
-                    int child = childPosition;
-                    if (!mShowTodayAll
-                        && Calendar.getInstance().get(Calendar.YEAR)
-                            == mPreviewDate.get(Calendar.YEAR)
-                        && mPreviewDate.get(Calendar.MONTH)
-                            == Calendar.getInstance().get(Calendar.MONTH))
-                    {
-                        child += mChannelProgramStartIndex.get(groupPosition).intValue();
-                    }// [1.0.0.7]dolphin++ if only show partial program
-                     // Log.d(TAG, String.format("%d %d", groupPosition,child));
-                    intent.putExtra(AtMoviesTVHttpHelper.KEY_CHANNEL_ID, chan.ID);
+                    ChannelItem chan = mChannelList.get(groupPosition);
+                    if (chan != null) {
+                        intent.putExtra(AtMoviesTVHttpHelper.KEY_GROUP, chan.Group);
+                        int child = childPosition;
+                        if (!mShowTodayAll
+                                && Calendar.getInstance().get(Calendar.YEAR)
+                                == mPreviewDate.get(Calendar.YEAR)
+                                && mPreviewDate.get(Calendar.MONTH)
+                                == Calendar.getInstance().get(Calendar.MONTH)) {
+                            child += mChannelProgramStartIndex.get(groupPosition).intValue();
+                        }// [1.0.0.7]dolphin++ if only show partial program
+                        // Log.d(TAG, String.format("%d %d", groupPosition,child));
+                        intent.putExtra(AtMoviesTVHttpHelper.KEY_CHANNEL_ID, chan.ID);
 
-                    ProgramItem prog = chan.Programs.get(child);
-                    if (prog != null) {
-                        intent.putExtra(AtMoviesTVHttpHelper.KEY_TVDATA, prog.Url);
-                        // Log.d(TAG, prog.Url);
-                        intent.putExtra(AtMoviesTVHttpHelper.KEY_PROGRAM_NAME, prog.Name);
-                        intent.putExtra(AtMoviesTVHttpHelper.KEY_CHANNEL, prog.Channel);
+                        ProgramItem prog = chan.Programs.get(child);
+                        if (prog != null) {
+                            intent.putExtra(AtMoviesTVHttpHelper.KEY_TVDATA, prog.Url);
+                            // Log.d(TAG, prog.Url);
+                            intent.putExtra(AtMoviesTVHttpHelper.KEY_PROGRAM_NAME, prog.Name);
+                            intent.putExtra(AtMoviesTVHttpHelper.KEY_CHANNEL, prog.Channel);
 
-                        startActivity(intent);
+                            startActivity(intent);
+                        }
                     }
+                    return true;// True if the click was handled
                 }
-                return true;// True if the click was handled
-            }
-        };
+            };
 
-    protected void expand_all(boolean bExpand)
-    {
+    protected void expand_all(boolean bExpand) {
         bIsExpand = bExpand;// [1.0.0.6]dolphin++
         for (int i = 0; i < mListView.getExpandableListAdapter()
                 .getGroupCount(); i++) {
@@ -421,14 +406,13 @@ public abstract class TVGuideListActionBarThemedActivity extends
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
 
         // Log.d(TAG, String.format("onResume()"));
 
         SharedPreferences settings =
-            PreferenceManager.getDefaultSharedPreferences(this);
+                PreferenceManager.getDefaultSharedPreferences(this);
         if (settings != null) {
             mShowTodayAll = settings.getBoolean("dTVGuide_ShowTodayAll", true);
             // Log.d(TAG, String.format("onResume() %d", mShowTodayAll ? 1 :
@@ -444,48 +428,44 @@ public abstract class TVGuideListActionBarThemedActivity extends
         }
     }
 
-    private Menu mOptionMenu = null;
+    protected Menu mOptionMenu = null;
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         mOptionMenu = menu;//store for loading use
-        menu.add(Menu.NONE, R.id.preference, 0, R.string.preference)
+        menu.add(Menu.NONE, R.id.preference, 100, R.string.preference)
                 //[40]--.setIcon(android.R.drawable.ic_menu_preferences)
                 .setIcon(R.drawable.ic_action_preference)
                 .setShowAsAction(
-                    MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+                        MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         //[32] not always show preference icon for MS2
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-            //Log.d(TAG, "HOME!");
+                //Log.d(TAG, "HOME!");
             {
                 close_program();
             }
-                return true;
-            case R.id.preference:
-            {
+            return true;
+            case R.id.preference: {
                 Intent intent2 = new Intent();
                 //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent2.setClass(TVGuideListActionBarThemedActivity.this,
-                    TVGuidePreference.class);
+                        TVGuidePreference.class);
                 startActivityForResult(intent2, 0);
             }
-                return true;
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.v(TAG, String.format("onActivityResult() %d %d", requestCode, resultCode));
         switch (requestCode) {
@@ -493,21 +473,20 @@ public abstract class TVGuideListActionBarThemedActivity extends
                 if (resultCode == Activity.RESULT_OK) {
                     show_loading(true);
                     send_message(EVENT_MSG_UPDATE_CHANNEL_LIST,
-                        getSActionBar().getSelectedNavigationIndex(),
-                        0, 100);
+                            getSActionBar().getSelectedNavigationIndex(),
+                            0, 100);
                 }
                 break;
         }
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig)
-    {
+    public void onConfigurationChanged(Configuration newConfig) {
         newConfig.locale = Locale.TAIWAN;
         super.onConfigurationChanged(newConfig);
 
         Locale.setDefault(Locale.TAIWAN);
         getBaseContext().getResources().updateConfiguration(newConfig,
-            getBaseContext().getResources().getDisplayMetrics());
+                getBaseContext().getResources().getDisplayMetrics());
     }
 }

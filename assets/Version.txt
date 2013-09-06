@@ -2,10 +2,18 @@
 https://play.google.com/store/apps/details?id=dolphin.apps.TaiwanTVGuide
 https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 
-支援功能(最新: 1.2.2)
+支援功能(最新: 1.2.5)
 ● 從開眼電影網下載本日節目表
 ● 現正播放以及下一部即將播放的電影
 ● 支援IMDb app (if has)
+
+[46] @ 2013-09-07
+    use SDK=18
+    android:targetSdkVersion="18"
+    android:allowBackup="true"
+    add tablet layout padding
+    use DAY_OF_WEEK as subtitle
+    adjust ActionBar items for tablet
 
 [45] @ 2013-07-15
     java.lang.NullPointerException
