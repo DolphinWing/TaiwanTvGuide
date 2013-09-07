@@ -152,7 +152,7 @@ public abstract class TVGuideListActionBarThemedActivity
 
         getSActionBar().setSelectedNavigationItem(group_index);
 
-        mListView.setEmptyView(findViewById(R.id.TextViewData));
+        //mListView.setEmptyView(findViewById(R.id.TextViewData));
     }
 
     @Override
@@ -333,6 +333,7 @@ public abstract class TVGuideListActionBarThemedActivity
 
             mListView.setAdapter(new GuideExpandableListAdapter(
                     TVGuideListActionBarThemedActivity.this, group, child));
+            mListView.setEmptyView(findViewById(R.id.TextViewData));
             expand_all(mExpandAll);// [1.0.0.6]dolphin++
         } else {
             // show no data

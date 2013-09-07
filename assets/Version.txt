@@ -7,6 +7,9 @@ https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 ● 現正播放以及下一部即將播放的電影
 ● 支援IMDb app (if has)
 
+[47] @ 2013-09-07
+    fix empty view set too early
+
 [46] @ 2013-09-07
     use SDK=18
     android:targetSdkVersion="18"
