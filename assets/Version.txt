@@ -2,11 +2,18 @@
 https://play.google.com/store/apps/details?id=dolphin.apps.TaiwanTVGuide
 https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 
-支援功能(最新: 1.2.5)
+支援功能(最新: 1.2.6)
 ● 從開眼電影網下載本日節目表
 ● 現正播放以及下一部即將播放的電影
 ● 支援IMDb app (if has)
 
+[49] @ 2013-09-14
+    FC when selecting a program to preview
+    fix empty view not shown?
+    this new release won't proguard
+
+[48]
+    fix empty view not shown?
 [47] @ 2013-09-07
     fix empty view set too early
 

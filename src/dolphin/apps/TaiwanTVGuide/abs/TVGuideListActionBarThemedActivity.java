@@ -333,7 +333,8 @@ public abstract class TVGuideListActionBarThemedActivity
 
             mListView.setAdapter(new GuideExpandableListAdapter(
                     TVGuideListActionBarThemedActivity.this, group, child));
-            mListView.setEmptyView(findViewById(R.id.TextViewData));
+            findViewById(R.id.TextViewData).setVisibility(View.VISIBLE);//[48]++
+            mListView.setEmptyView(findViewById(R.id.TextViewData));//[47]++
             expand_all(mExpandAll);// [1.0.0.6]dolphin++
         } else {
             // show no data
@@ -353,7 +354,14 @@ public abstract class TVGuideListActionBarThemedActivity
 
                 @Override
                 public boolean onChildClick(ExpandableListView parent, View v,
-                                            int groupPosition, int childPosition, long id) {
+                                            int groupPosition, int childPosition,
+                                            long id) {
+                    if (groupPosition >= mChannelList.size()) {//[49]++
+                        Toast.makeText(getBaseContext(), R.string.no_data,
+                                Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+
                     Intent intent = new Intent();
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.setClass(TVGuideListActionBarThemedActivity.this,
@@ -371,10 +379,11 @@ public abstract class TVGuideListActionBarThemedActivity
                         intent.putExtra(AtMoviesTVHttpHelper.KEY_GROUP, chan.Group);
                         int child = childPosition;
                         if (!mShowTodayAll
-                                && Calendar.getInstance().get(Calendar.YEAR)
-                                == mPreviewDate.get(Calendar.YEAR)
-                                && mPreviewDate.get(Calendar.MONTH)
-                                == Calendar.getInstance().get(Calendar.MONTH)) {
+                                && DateUtils.isToday(mPreviewDate.getTimeInMillis())) {
+//                                && Calendar.getInstance().get(Calendar.YEAR)
+//                                == mPreviewDate.get(Calendar.YEAR)
+//                                && mPreviewDate.get(Calendar.MONTH)
+//                                == Calendar.getInstance().get(Calendar.MONTH)) {
                             child += mChannelProgramStartIndex.get(groupPosition).intValue();
                         }// [1.0.0.7]dolphin++ if only show partial program
                         // Log.d(TAG, String.format("%d %d", groupPosition,child));
