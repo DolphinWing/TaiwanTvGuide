@@ -2,6 +2,7 @@ package dolphin.apps.TaiwanTVGuide.navi;
 
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -256,23 +257,24 @@ public class CurrentPlayingFragment extends Fragment {
                         // Log.d(TAG, String.format("%d %d", groupPosition,child));
 
                         ProgramItem program = channel.Programs.get(child);
-                        startProgramActivity(channel, program);
+                        startProgramActivity(getActivity(), mPreviewDate, channel, program);
                     }
                     return true;// True if the click was handled
                 }
             };
 
-    private void startProgramActivity(ChannelItem channel, ProgramItem program) {
+    public static void startProgramActivity(Context context, Calendar previewDate,
+                                     ChannelItem channel, ProgramItem program) {
         Intent intent = new Intent();
         //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setClass(getActivity(), TVGuideProgramABF.class);
+        intent.setClass(context, TVGuideProgramABF.class);
 
         intent.putExtra(
                 AtMoviesTVHttpHelper.KEY_DATE,
                 String.format("%04d-%02d-%02d",
-                        mPreviewDate.get(Calendar.YEAR),
-                        mPreviewDate.get(Calendar.MONTH) + 1,
-                        mPreviewDate.get(Calendar.DAY_OF_MONTH)));
+                        previewDate.get(Calendar.YEAR),
+                        previewDate.get(Calendar.MONTH) + 1,
+                        previewDate.get(Calendar.DAY_OF_MONTH)));
 
         if (channel != null) {
             intent.putExtra(AtMoviesTVHttpHelper.KEY_GROUP, channel.Group);
@@ -284,7 +286,7 @@ public class CurrentPlayingFragment extends Fragment {
                 intent.putExtra(AtMoviesTVHttpHelper.KEY_PROGRAM_NAME, program.Name);
                 intent.putExtra(AtMoviesTVHttpHelper.KEY_CHANNEL, program.Channel);
 
-                startActivity(intent);
+                context.startActivity(intent);
             }
         }
     }
@@ -318,7 +320,7 @@ public class CurrentPlayingFragment extends Fragment {
                             // Log.d(TAG, String.format("%d %d", groupPosition,child));
 
                             ProgramItem program = channel.Programs.get(child);
-                            startAddingCalendar(channel, program);
+                            startAddingCalendar(getActivity(), channel, program);
                         }
 
                         // Return true as we are handling the event.
@@ -332,7 +334,8 @@ public class CurrentPlayingFragment extends Fragment {
 
     //Android Essentials: Adding Events to the User’s Calendar
     //http://goo.gl/jyT75l
-    private void startAddingCalendar(ChannelItem channel, ProgramItem program) {
+    public static void startAddingCalendar(Context context,
+                                           ChannelItem channel, ProgramItem program) {
         Intent calIntent = new Intent(Intent.ACTION_INSERT);
         calIntent.setData(CalendarContract.Events.CONTENT_URI);
 
@@ -353,6 +356,6 @@ public class CurrentPlayingFragment extends Fragment {
         calIntent.putExtra(CalendarContract.Events.AVAILABILITY,
                 CalendarContract.Events.AVAILABILITY_FREE);
 
-        startActivity(calIntent);
+        context.startActivity(calIntent);
     }
 }

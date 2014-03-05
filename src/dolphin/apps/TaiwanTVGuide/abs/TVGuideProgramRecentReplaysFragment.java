@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -23,7 +24,9 @@ import java.util.List;
 
 import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.TVGuideWebView;
+import dolphin.apps.TaiwanTVGuide.navi.CurrentPlayingFragment;
 import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
+import dolphin.apps.TaiwanTVGuide.provider.ChannelItem;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
 
 public class TVGuideProgramRecentReplaysFragment extends TVGuideFragment {
@@ -90,6 +93,25 @@ public class TVGuideProgramRecentReplaysFragment extends TVGuideFragment {
             //Log.d(TAG, str);
             mReplayList.setAdapter(new ArrayAdapter<String>(getActivity(),
                     android.R.layout.simple_list_item_1, replays));
+//            mReplayList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                    ProgramItem program = progItem;
+//                    program.Date = progItem.Replays.get(i);
+//                    CurrentPlayingFragment.startAddingCalendar(getActivity(),
+//                            new ChannelItem(null, progItem.Channel), progItem);
+//                }
+//            });
+            mReplayList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    ProgramItem program = progItem;
+                    program.Date = progItem.Replays.get(i);
+                    CurrentPlayingFragment.startAddingCalendar(getActivity(),
+                            new ChannelItem(null, progItem.Channel), progItem);
+                    return true;
+                }
+            });
         } else {
             str = getString(R.string.no_data);
             mReplayList.setAdapter(null);
