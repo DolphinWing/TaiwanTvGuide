@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
@@ -123,6 +124,7 @@ public abstract class TVGuideListActionBarThemedActivity
 
         mListView = (ExpandableListView) findViewById(R.id.ExpandableListViewGuideList);
         mListView.setOnChildClickListener(OnChildClick);
+        mListView.setOnItemLongClickListener(OnChildLongClick);//[50]++
         mLoadingLayout = (LinearLayout) findViewById(R.id.fullscreen_loading_indicator);
 
         mGroups = getResources().getStringArray(R.array.channel_group);
@@ -400,6 +402,34 @@ public abstract class TVGuideListActionBarThemedActivity
                         }
                     }
                     return true;// True if the click was handled
+                }
+            };
+
+    //[50]++
+    private ExpandableListView.OnItemLongClickListener OnChildLongClick =
+            new ExpandableListView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                               int position, long id) {
+                    //Log.d(TAG, String.format("onItemLongClick %d", position));
+                    //http://stackoverflow.com/a/8320128/2673859
+                    if (ExpandableListView.getPackedPositionType(id)
+                            == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+                        int groupPosition = ExpandableListView.getPackedPositionGroup(id);
+                        int childPosition = ExpandableListView.getPackedPositionChild(id);
+
+                        // You now have everything that you would as if this was an
+                        // OnChildClickListener()
+                        // Add your logic here.
+                        Log.d(TAG, String.format(" group: %d", groupPosition));
+                        Log.d(TAG, String.format(" child: %d", childPosition));
+
+                        // Return true as we are handling the event.
+                        return true;
+                    }
+
+                    Log.w(TAG, "long click on group head");
+                    return true;//still don't expand/collapse
                 }
             };
 

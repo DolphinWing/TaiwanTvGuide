@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import dolphin.apps.TaiwanTVGuide.navi.CurrentPlayingActivity;
+
 public class SplashActivity extends Activity
 {
 	//Hide application launcher icon in title bar when activity starts in android
@@ -22,7 +24,7 @@ public class SplashActivity extends Activity
 	{
 		super.onResume();
 
-		Intent i = new Intent(getBaseContext(), TVGuideNowPlayingAB.class);
+		Intent i = new Intent(getBaseContext(), CurrentPlayingActivity.class);
 		i.putExtras(getIntent());
 		startActivity(i);
 		this.finish();

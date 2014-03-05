@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-	<string-array name="channel_group">
-		<item>綜合 A</item>
-		<item>戲劇 T</item>
-		<item>綜藝 G</item>
-		<item>新聞 N</item>
-		<item>數位 D</item>
-		<item>西片 M</item>
-		<item>國片 L</item>
-		<item>卡通 C</item>
-		<item>新知 E</item>
-		<item>日本 J</item>
-		<item>體育 S</item>
-		<item>音樂 V</item>
-		<item>財經 F</item>
-		<item>宗教 R</item>
-	</string-array>
-	<string-array name="channel_group_index">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-		<item>3</item>
-		<item>4</item>
-		<item>5</item>
-		<item>6</item>
-		<item>7</item>
-		<item>8</item>
-		<item>9</item>
-		<item>10</item>
-		<item>11</item>
-		<item>12</item>
-		<item>13</item>
-	</string-array>
+    <string-array name="channel_group">
+        <item>綜合 A</item>
+        <item>戲劇 T</item>
+        <item>綜藝 G</item>
+        <item>新聞 N</item>
+        <item>數位 D</item>
+        <item>西片 M</item>
+        <item>國片 L</item>
+        <item>卡通 C</item>
+        <item>新知 E</item>
+        <item>日本 J</item>
+        <item>體育 S</item>
+        <item>音樂 V</item>
+        <item>財經 F</item>
+        <item>宗教 R</item>
+    </string-array>
+    <string-array name="channel_group_index">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+    </string-array>
+    <string-array name="list_type">
+        <item>現正播放</item>
+        <item>今日節目表</item>
+    </string-array>
 </resources>
