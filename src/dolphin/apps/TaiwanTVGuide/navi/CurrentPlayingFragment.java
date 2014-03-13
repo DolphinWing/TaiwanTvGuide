@@ -19,6 +19,10 @@ import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Fields;
+import com.google.analytics.tracking.android.MapBuilder;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -125,6 +129,8 @@ public class CurrentPlayingFragment extends Fragment {
 
     private void downloadData() {
         mChannelProgramStartIndex = new ArrayList<Integer>();
+        final EasyTracker easyTracker = EasyTracker.getInstance(getActivity());
+        final long startTime = System.currentTimeMillis();
 
         new Thread(new Runnable() {
             @Override
@@ -142,6 +148,14 @@ public class CurrentPlayingFragment extends Fragment {
                 }
                 mIsLoading = false;
                 //Log.d(TAG, "done getting data");
+                if (easyTracker != null) {
+                    easyTracker.send(MapBuilder.createEvent("UX",//Event category (required)
+                                    "network",//Event action (required)
+                                    "downloadData",//Event label
+                                    System.currentTimeMillis() - startTime)//Event value
+                                    .build()
+                    );
+                }
 
                 if (getActivity() != null)
                     getActivity().runOnUiThread(new Runnable() {

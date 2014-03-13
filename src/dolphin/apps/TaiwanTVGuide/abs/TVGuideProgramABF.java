@@ -14,6 +14,9 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Fields;
+import com.google.analytics.tracking.android.MapBuilder;
 
 import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
@@ -25,6 +28,7 @@ public class TVGuideProgramABF extends SherlockFragmentActivity implements
     TabHost mTabHost;
     ViewPager mViewPager;
     MyTabsAdapter mTabsAdapter;
+    long mStartTime = 0;
 
     /**
      * Called when the activity is first created.
@@ -53,6 +57,7 @@ public class TVGuideProgramABF extends SherlockFragmentActivity implements
 
         mTabsAdapter = new MyTabsAdapter(this, mTabHost, mViewPager);
 
+        mStartTime = System.currentTimeMillis();
         //[Android] Custom TabHost Style
         //http://www.dotblogs.com.tw/alonstar/archive/2012/04/18/android_tabhost.aspx
         //How to change tab style in Android?
@@ -128,6 +133,18 @@ public class TVGuideProgramABF extends SherlockFragmentActivity implements
 
     @Override
     public void onDataReceived(ProgramItem progItem) {
+        EasyTracker easyTracker = EasyTracker.getInstance(this);
+        if (easyTracker != null) {
+            easyTracker.set(Fields.SCREEN_NAME, TAG);
+            // MapBuilder.createEvent().build() returns a Map of event fields and values
+            // that are set and sent with the hit.
+            easyTracker.send(MapBuilder.createEvent("UX",//Event category (required)
+                            "network",//Event action (required)
+                            "onDataReceived",//Event label
+                            System.currentTimeMillis() - mStartTime)//Event value
+                            .build()
+            );
+        }
         //Log.d(TAG, "mTabsAdapter " + mTabsAdapter.getCount());
         //Log.d(TAG, "  " + mTabsAdapter.getItem(1).toString());
         //get recent_replay tab and set replay data
@@ -147,5 +164,19 @@ public class TVGuideProgramABF extends SherlockFragmentActivity implements
                 trans.commit();
             }
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //... // The rest of your onStart() code.
+        EasyTracker.getInstance(this).activityStart(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        //... // The rest of your onStop() code.
+        EasyTracker.getInstance(this).activityStop(this);
     }
 }

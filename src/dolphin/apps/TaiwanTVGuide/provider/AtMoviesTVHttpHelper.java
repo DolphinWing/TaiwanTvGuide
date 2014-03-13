@@ -320,30 +320,39 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                 ChannelItem channel = new ChannelItem(t1.substring(t1.lastIndexOf("=") + 1),
                         mTitle.group(2), group_id);
                 // Log.d(TAG, channel.ID);
-                /*
-				 * <td class=at11 width=40%>&nbsp;<font class=at9
-				 * color=#acacac>14:00</font>&nbsp; <font
-				 * color=#2A5C8A>【熱門9點檔】</font> <a target="_self"href=
-				 * "attv.cfm?action=tvdata&tvtimeid=JCH50201104141400&channelid=CH50&html=n"
-				 * >不毛地帶 </a>　<font color=#606060></font> </td> <td class=at11
-				 * width=40%>&nbsp;<font class=at9
-				 * color=#acacac>15:00</font>&nbsp; <a target="_self"href=
-				 * "attv.cfm?action=tvdata&tvtimeid=JCH50201104141500&channelid=CH50&html=n"
-				 * >超省時生活 </a>　<font color=#606060></font> </td>
-				 */
+//<td class=at11 width=40%>&nbsp;<font class=at9 color=#acacac>23:00</font>&nbsp;
+//<a target="_self" href="attv.cfm?action=tvdata&tvtimeid=MCH58201403132300&channelid=CH58&html=n">CSI 犯罪現場 第五季 </a>　<font color=#606060></font>
+//</td>
+//<td class=at11 width=40%>&nbsp;<font class=at9 color=#acacac>00:00</font>&nbsp;
+//<a target="_self" href="attv.cfm?action=tvdata&tvtimeid=MCH58201403140000&channelid=CH58&html=n">CSI犯罪現場:邁阿密 第10季 </a>　<font color=#606060></font>
+//</td>
+
+//<td class=at11 width=40%>&nbsp;<font class=at9 color=#acacac>23:40</font>&nbsp;
+//<font color=#ff0000>☆</font>
+//<a target="_self" href="attv.cfm?action=tvdata&tvtimeid=MCH60201403132340&channelid=CH60&html=n">復仇者聯盟 </a>　<font color=#606060></font>
+//</td>
+//<td class=at11 width=40%>&nbsp;<font class=at9 color=#acacac>02:40</font>&nbsp;
+//<font color=#ff0000>☆</font>
+//<a target="_self" href="attv.cfm?action=tvdata&tvtimeid=MCH60201403140240&channelid=CH60&html=n">隔離島 </a>　<font color=#606060></font>
+//</td>
+
                 srcHtml = srcHtml.substring(startIndex + 1);
                 String programHtml = srcHtml;
                 try {// for last one
                     startIndex = programHtml.indexOf("<tr bgcolor=#ffffff>");
                     programHtml = programHtml.substring(0, startIndex - 1);
-                    programHtml = Pattern.compile("<font color[^<]*[^>]*>")
-                            .matcher(programHtml).replaceAll("");// [0.3.0.15]dolphin++
+                    programHtml = Pattern.compile("<font color[^<]*<[^>]*>")
+                            .matcher(programHtml).replaceAll("");//[0.3.0.15]dolphin++
+                    //programHtml = Pattern.compile("<font class[^<]*[^>]*>")
+                    //        .matcher(programHtml).replaceAll("");//[1.3.2]dolphin++
                 } catch (Exception e2) {
+                    Log.e(TAG, "programHtml filter replace error: " + e2.getMessage());
                 }
-                programHtml = programHtml.replace("<font color=#ff0000>☆</font>", "");
+                if (programHtml.contains("<font color=#ff0000>☆</font>"))//[1.3.2] add if
+                    programHtml = programHtml.replace("<font color=#ff0000>☆</font>", "");
 
                 String pat =
-                        "<font class=at9[^>]*>([^<]*)<[^<]*<a tar[^ ]* href=\"([^\"]*)\">([^<]*)</";
+                        "<font class=at9[^>]*>([^<]*)<[^<]*<a target[^ ]* href=\"([^\"]*)\">([^<]+)</";
                 Matcher mProgram = Pattern.compile(pat).matcher(programHtml);
                 int i = 0;
                 while (mProgram.find()) {
@@ -357,10 +366,10 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                     int minute = Integer.parseInt(time.substring(time.indexOf(":") + 1));
                     // Log.d(TAG, String.format("=== %d %02d:%02d", i,
                     // hour, minute));
+                    item.Date.set(Calendar.HOUR_OF_DAY, hour);
                     if (i == 0 && hour > 12) {
                         item.Date.add(Calendar.HOUR_OF_DAY, -24);
                     }
-                    item.Date.set(Calendar.HOUR_OF_DAY, hour);
                     item.Date.set(Calendar.MINUTE, minute);
 
                     item.Url = mProgram.group(2);

@@ -7,6 +7,7 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,17 +23,24 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.androidquery.service.MarketService;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Fields;
+import com.google.analytics.tracking.android.MapBuilder;
+
 import java.util.Calendar;
 import java.util.Locale;
 
 import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.TVGuidePreference;
+import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 
 /**
  * Created by dolphin on 2014/2/22.
  */
 public class CurrentPlayingActivity extends Activity
         implements ActionBar.OnNavigationListener {
+    private final static String TAG = "CurrentPlayingActivity";
     private String[] mPlanetTitles;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -42,6 +50,7 @@ public class CurrentPlayingActivity extends Activity
     private boolean mShowTodayAll = true;
     private boolean mExpandAll = false;
     private Calendar mPreviewDate;
+    private String mUrl = AtMoviesTVHttpHelper.ATMOVIES_TV_URL;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,20 +123,24 @@ public class CurrentPlayingActivity extends Activity
                 ArrayAdapter.createFromResource(getBaseContext(),
                         R.array.list_type,
                         android.R.layout.simple_spinner_dropdown_item),
-                this);
+                this
+        );
+
+        //[53]dolphin++ https://code.google.com/p/android-query/wiki/Service
+        MarketService ms = new MarketService(this);
+        ms.level(MarketService.REVISION).checkVersion();
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         mShowTodayAll = mPrefs.getBoolean("dTVGuide_ShowTodayAll", true);
         mExpandAll = mPrefs.getBoolean("dTVGuide_ExpendAll", false);
         new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                mGroupIndex = (!mPrefs.contains("dTVGuide_DefaultGroup")) ? 5
-                        : Integer.parseInt(mPrefs.getString("dTVGuide_DefaultGroup", "5"));
-                selectItem(mGroupIndex, System.currentTimeMillis());
-            }
-        }
-
+                               @Override
+                               public void run() {
+                                   mGroupIndex = (!mPrefs.contains("dTVGuide_DefaultGroup")) ? 5
+                                           : Integer.parseInt(mPrefs.getString("dTVGuide_DefaultGroup", "5"));
+                                   selectItem(mGroupIndex, System.currentTimeMillis());
+                               }
+                           }
         );
     }
 
@@ -166,6 +179,23 @@ public class CurrentPlayingActivity extends Activity
         mDrawerList.setItemChecked(position, true);
         setTitle(group);
         mDrawerLayout.closeDrawer(mDrawerList);
+
+        //[1.3.2]++
+        mUrl = mUrl.replace("@group", group.split(" ")[1]);
+        // May return null if a EasyTracker has not yet been initialized with a
+        // property ID.
+        EasyTracker easyTracker = EasyTracker.getInstance(this);
+        if (easyTracker != null) {
+            easyTracker.set(Fields.SCREEN_NAME, TAG);
+            // MapBuilder.createEvent().build() returns a Map of event fields and values
+            // that are set and sent with the hit.
+            easyTracker.send(MapBuilder.createEvent("UX",//Event category (required)
+                            "touch",//Event action (required)
+                            "selectItem",//Event label
+                            (long) position)//Event value
+                            .build()
+            );
+        }
     }
 
     @Override
@@ -211,10 +241,16 @@ public class CurrentPlayingActivity extends Activity
                 break;
             case R.id.preference: {
                 Intent intent2 = new Intent();
-                //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                //intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent2.setClass(CurrentPlayingActivity.this,
                         TVGuidePreference.class);
                 startActivityForResult(intent2, 0);
+            }
+            return true;
+            case R.id.action_browser: {
+                Intent intent3 = new Intent(Intent.ACTION_VIEW);
+                intent3.setData(Uri.parse(mUrl));
+                startActivityForResult(intent3, 0);
             }
             return true;
         }
@@ -240,9 +276,37 @@ public class CurrentPlayingActivity extends Activity
 
     @Override
     public boolean onNavigationItemSelected(int i, long l) {
+        mUrl = String.format("%s/%s", AtMoviesTVHttpHelper.ATMOVIES_TV_URL,
+                getString(R.string.url_showtime));
+        EasyTracker easyTracker = EasyTracker.getInstance(this);
+        if (easyTracker != null) {
+            easyTracker.set(Fields.SCREEN_NAME, TAG);
+            // MapBuilder.createEvent().build() returns a Map of event fields and values
+            // that are set and sent with the hit.
+            easyTracker.send(MapBuilder.createEvent("UX",//Event category (required)
+                            "touch",//Event action (required)
+                            "onNavigationItemSelected",//Event label
+                            (long) i)//Event value
+                            .build()
+            );
+        }
         mPreviewDate = Calendar.getInstance();
         selectItem(mGroupIndex, mPreviewDate.getTimeInMillis());
         invalidateOptionsMenu();
         return true;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //... // The rest of your onStart() code.
+        EasyTracker.getInstance(this).activityStart(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        //... // The rest of your onStop() code.
+        EasyTracker.getInstance(this).activityStop(this);
     }
 }
