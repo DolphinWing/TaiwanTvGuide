@@ -16,11 +16,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.Fields;
 import com.google.analytics.tracking.android.MapBuilder;
 
 import java.util.ArrayList;
@@ -48,6 +46,7 @@ public class CurrentPlayingFragment extends Fragment {
 
     private ExpandableListView mListView;
     private View mLoadingView;
+    private View mEmptyView;
     private String mGroup, mGroupId = null;
     private int mListType = 0;//0 as currently playing; 1 as today's show
     private AtMoviesTVHttpHelper mHelper;
@@ -65,14 +64,15 @@ public class CurrentPlayingFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_expandable_list, null);
 
         mListView = (ExpandableListView) view.findViewById(android.R.id.list);
-        TextView tvEmpty = new TextView(getActivity());
-        tvEmpty.setText(R.string.no_data);
-        mListView.setEmptyView(tvEmpty);
+        mEmptyView = view.findViewById(android.R.id.text1);
+        if (mEmptyView != null)
+            mListView.setEmptyView(mEmptyView);
         mListView.setOnChildClickListener(OnChildClick);
         mListView.setOnItemLongClickListener(OnChildLongClick);
 
         mLoadingView = view.findViewById(android.R.id.progress);
         mLoadingView.setVisibility(mIsLoading ? View.VISIBLE : View.GONE);
+        mEmptyView.setVisibility(mIsLoading ? View.GONE : View.VISIBLE);
         //Log.d(TAG, "onCreateView done");
 
         return view;
@@ -94,8 +94,10 @@ public class CurrentPlayingFragment extends Fragment {
         }
 
         mHelper = new AtMoviesTVHttpHelper(getActivity());
-        if (mGroupId != null)
+        if (mGroupId != null) {
+            Log.d(TAG, "onCreate: start getting data");
             downloadData();
+        }
     }
 
     @Override
@@ -122,6 +124,7 @@ public class CurrentPlayingFragment extends Fragment {
             }
 
             if (mGroupId != null && mHelper != null) {
+                Log.d(TAG, "setArguments: start getting data");
                 downloadData();
             }
         }
@@ -169,6 +172,8 @@ public class CurrentPlayingFragment extends Fragment {
                                         mGroup.split(" ")[0],
                                         mPreviewDate.get(Calendar.MONTH) + 1,
                                         mPreviewDate.get(Calendar.DAY_OF_MONTH)));
+                            else if (mEmptyView != null)
+                                mEmptyView.setVisibility(View.VISIBLE);
                             if (mLoadingView != null)
                                 mLoadingView.setVisibility(View.GONE);
                         }
@@ -278,7 +283,7 @@ public class CurrentPlayingFragment extends Fragment {
             };
 
     public static void startProgramActivity(Context context, Calendar previewDate,
-                                     ChannelItem channel, ProgramItem program) {
+                                            ChannelItem channel, ProgramItem program) {
         Intent intent = new Intent();
         //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setClass(context, TVGuideProgramABF.class);
@@ -288,7 +293,8 @@ public class CurrentPlayingFragment extends Fragment {
                 String.format("%04d-%02d-%02d",
                         previewDate.get(Calendar.YEAR),
                         previewDate.get(Calendar.MONTH) + 1,
-                        previewDate.get(Calendar.DAY_OF_MONTH)));
+                        previewDate.get(Calendar.DAY_OF_MONTH))
+        );
 
         if (channel != null) {
             intent.putExtra(AtMoviesTVHttpHelper.KEY_GROUP, channel.Group);

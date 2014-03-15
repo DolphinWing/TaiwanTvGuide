@@ -19,4 +19,5 @@
 
 <resources>
     <color name="pressed_holo_orange_dark">#CCFF8800</color>
+    <color name="left_drawer_background">#FF330000</color>
 </resources>

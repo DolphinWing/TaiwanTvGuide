@@ -7,6 +7,16 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:background="@drawable/ab_stacked_solid_holo_orange_dark">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/no_data"
+        android:id="@android:id/text1"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal|top"
+        android:padding="@dimen/tab_host_default_height"/>
+
     <ExpandableListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
@@ -20,5 +30,6 @@
         layout="@layout/fullscreen_loading_indicator"
         android:visibility="gone">
     </include>
+
 
 </FrameLayout>

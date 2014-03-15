@@ -6,6 +6,11 @@ https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 ● 從開眼電影網下載本日節目表
 ● 現正播放以及下一部即將播放的電影
 ● 支援IMDb app (if has)
+--
+[54] @ 2014-03-16
+    update ListView.setEmptyView
+    update parsing pattern string
+    use SDK=19
 
 [53] @ 2014-03-14
     adjust the parsing pattern

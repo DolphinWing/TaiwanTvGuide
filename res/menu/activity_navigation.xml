@@ -4,6 +4,11 @@
         android:icon="@drawable/ic_action_refresh"
         android:title="@string/refresh">
     </item>
+    <item
+        android:id="@+id/action_browser"
+        android:icon="@android:drawable/ic_menu_mapmode"
+        android:title="@string/atmovies_tv">
+    </item>
     <group android:id="@+id/preview_option_group">
         <item
             android:id="@+id/preview_prev_day"

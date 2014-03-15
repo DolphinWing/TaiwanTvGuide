@@ -88,6 +88,7 @@ public class CurrentPlayingActivity extends Activity
         mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                //Log.d(TAG, "mDrawerList.setOnItemClickListener " + position);
                 mGroupIndex = position;
                 selectItem(mGroupIndex, mPreviewDate.getTimeInMillis());
             }
@@ -138,7 +139,7 @@ public class CurrentPlayingActivity extends Activity
                                public void run() {
                                    mGroupIndex = (!mPrefs.contains("dTVGuide_DefaultGroup")) ? 5
                                            : Integer.parseInt(mPrefs.getString("dTVGuide_DefaultGroup", "5"));
-                                   selectItem(mGroupIndex, System.currentTimeMillis());
+                                   //selectItem(mGroupIndex, System.currentTimeMillis());
                                }
                            }
         );
@@ -276,6 +277,7 @@ public class CurrentPlayingActivity extends Activity
 
     @Override
     public boolean onNavigationItemSelected(int i, long l) {
+        //Log.d(TAG, "onNavigationItemSelected " + i);
         mUrl = String.format("%s/%s", AtMoviesTVHttpHelper.ATMOVIES_TV_URL,
                 getString(R.string.url_showtime));
         EasyTracker easyTracker = EasyTracker.getInstance(this);

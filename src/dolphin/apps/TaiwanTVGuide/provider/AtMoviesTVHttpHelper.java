@@ -53,9 +53,10 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
         // Log.d(TAG, date);
         url = url.replace("@date", date).replace("@group", group_id);
         url = url.replace("#@channel", "");//[0.4.0.18] @ 2011-06-01
-        Log.d(TAG, url);
+        Log.v(TAG, url);
         ArrayList<ChannelItem> list = null;
 
+        long startTime = System.currentTimeMillis();
         try {
             String response = super.getUrlContent(url);// , ENCODE_BIG5);
             if (response == null || response == "") {
@@ -166,12 +167,15 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                     this.getClass().getName(), e.getMessage()));
         }
 
+        long endTime = System.currentTimeMillis();
+        Log.v(TAG, String.format("wasted %d ms", (endTime - startTime)));
         return list;
     }
 
     public ProgramItem get_program_guide(String tvdataUrl) {
         String url = String.format("%s/%s", ATMOVIES_TV_URL, tvdataUrl);
-        Log.d(TAG, url);
+        Log.v(TAG, url);
+        long startTime = System.currentTimeMillis();
 
         ProgramItem progItem = null;
         try {
@@ -284,6 +288,8 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                     this.getClass().getName(), e.getMessage()));
         }
 
+        long endTime = System.currentTimeMillis();
+        Log.v(TAG, String.format("wasted %d ms", (endTime - startTime)));
         return progItem;
     }
 
@@ -292,9 +298,10 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                 mContext.getString(R.string.url_showtime));
         // Log.d(TAG, date);
         url = url.replace("@group", group_id);
-        Log.d(TAG, url);
+        Log.v(TAG, url);
         ArrayList<ChannelItem> list = null;
 
+        long startTime = System.currentTimeMillis();
         try {
             String response = super.getUrlContent(url);// , ENCODE_BIG5);
             if (response == null || response == "") {
@@ -314,7 +321,9 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                     "<td nowrap[^<]*<a tar[^ ]* href=\"([^\"]*)\">([^<]*)</";
             Matcher mTitle = Pattern.compile(pattern).matcher(response);
             String srcHtml = response;
-            int startIndex = response.indexOf("<tr bgcolor=#ffffff>");
+            if (srcHtml.contains("<!--blank row-->"))//[54]++
+                srcHtml = srcHtml.substring(0, srcHtml.lastIndexOf("<!--blank row-->"));
+            int startIndex = srcHtml.indexOf("<tr bgcolor=#ffffff>");
             while (mTitle.find()) {
                 String t1 = mTitle.group(1);
                 ChannelItem channel = new ChannelItem(t1.substring(t1.lastIndexOf("=") + 1),
@@ -335,21 +344,22 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
 //<font color=#ff0000>☆</font>
 //<a target="_self" href="attv.cfm?action=tvdata&tvtimeid=MCH60201403140240&channelid=CH60&html=n">隔離島 </a>　<font color=#606060></font>
 //</td>
-
                 srcHtml = srcHtml.substring(startIndex + 1);
                 String programHtml = srcHtml;
                 try {// for last one
                     startIndex = programHtml.indexOf("<tr bgcolor=#ffffff>");
-                    programHtml = programHtml.substring(0, startIndex - 1);
-                    programHtml = Pattern.compile("<font color[^<]*<[^>]*>")
-                            .matcher(programHtml).replaceAll("");//[0.3.0.15]dolphin++
-                    //programHtml = Pattern.compile("<font class[^<]*[^>]*>")
-                    //        .matcher(programHtml).replaceAll("");//[1.3.2]dolphin++
+                    if (startIndex > 0)
+                        programHtml = programHtml.substring(0, startIndex - 1);
+//                    Log.d(TAG, programHtml);
+//                    programHtml = Pattern.compile("<font color[^<]*<[^>]*>")
+//                            .matcher(programHtml).replaceAll("");//[0.3.0.15]dolphin++
+                    programHtml = programHtml.replaceAll("<font color[^<]*<[^>]*>", "");
+                    //Log.d(TAG, programHtml);
                 } catch (Exception e2) {
                     Log.e(TAG, "programHtml filter replace error: " + e2.getMessage());
                 }
-                if (programHtml.contains("<font color=#ff0000>☆</font>"))//[1.3.2] add if
-                    programHtml = programHtml.replace("<font color=#ff0000>☆</font>", "");
+//                if (programHtml.contains("<font color=#ff0000>☆</font>"))//[1.3.2] add if
+//                    programHtml = programHtml.replace("<font color=#ff0000>☆</font>", "");
 
                 String pat =
                         "<font class=at9[^>]*>([^<]*)<[^<]*<a target[^ ]* href=\"([^\"]*)\">([^<]+)</";
@@ -386,6 +396,8 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                     this.getClass().getName(), e.getMessage()));
         }
 
+        long endTime = System.currentTimeMillis();
+        Log.v(TAG, String.format("wasted %d ms", (endTime - startTime)));
         return list;
     }
 }
