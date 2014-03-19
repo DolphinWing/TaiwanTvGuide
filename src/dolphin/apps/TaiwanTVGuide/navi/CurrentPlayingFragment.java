@@ -150,12 +150,13 @@ public class CurrentPlayingFragment extends Fragment {
                         break;
                 }
                 mIsLoading = false;
-                //Log.d(TAG, "done getting data");
+                long totalTime = System.currentTimeMillis() - startTime;
+                Log.v(TAG, String.format("done getting data: %dms", totalTime));
                 if (easyTracker != null) {
-                    easyTracker.send(MapBuilder.createEvent("UX",//Event category (required)
-                                    "network",//Event action (required)
-                                    "downloadData",//Event label
-                                    System.currentTimeMillis() - startTime)//Event value
+                    easyTracker.send(MapBuilder.createEvent("Network",//category (required)
+                                    "downloadData",//action (required)
+                                    String.format("type=%d", mListType),//label
+                                    /*totalTime*/null)//Event value
                                     .build()
                     );
                 }

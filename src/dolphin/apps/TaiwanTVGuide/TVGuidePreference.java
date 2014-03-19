@@ -11,22 +11,24 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-public class TVGuidePreference extends PreferenceActivity
-{
+import com.google.analytics.tracking.android.EasyTracker;
+
+public class TVGuidePreference extends PreferenceActivity {
     private static final String TAG = "TVGuidePreference";
     private boolean mValueUpdated = false;
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Android PreferenceActivity
         // http://www.cnblogs.com/wservices/archive/2010/07/08/1773449.html
         addPreferencesFromResource(R.xml.preference);
         this.setTitle(String.format("%s - %s", getString(R.string.app_name),
-            getString(R.string.preference)));//[1.0.0.6]dolphin++
+                getString(R.string.preference)));//[1.0.0.6]dolphin++
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         if (settings != null) {
@@ -38,29 +40,24 @@ public class TVGuidePreference extends PreferenceActivity
         }
 
         this.findPreference("dTVGuide_VersionInfo").setSummary(
-            getVersionName(getBaseContext(), TVGuidePreference.class));
+                getVersionName(getBaseContext(), TVGuidePreference.class));
         mValueUpdated = false;
     }
 
     private SharedPreferences.OnSharedPreferenceChangeListener onPreferenceChanged =
-        new SharedPreferences.OnSharedPreferenceChangeListener()
-        {
+            new SharedPreferences.OnSharedPreferenceChangeListener() {
 
-            @Override
-            public void onSharedPreferenceChanged(
-                    SharedPreferences sharedPreferences, String key)
-            {
-                // TODO Auto-generated method stub
-                Log.d(TAG, String.format("KEY=%s", key));
-                mValueUpdated = true;
-            }
+                @Override
+                public void onSharedPreferenceChanged(
+                        SharedPreferences sharedPreferences, String key) {
+                    Log.d(TAG, String.format("KEY=%s", key));
+                    mValueUpdated = true;
+                }
 
-        };
+            };
 
     @Override
-    public void onBackPressed()
-    {
-        // TODO Auto-generated method stub
+    public void onBackPressed() {
         Log.d(TAG, String.format("onBackPressed()"));
         //super.onBackPressed();
         Intent intent = new Intent();
@@ -69,13 +66,11 @@ public class TVGuidePreference extends PreferenceActivity
     }
 
     @Override
-    protected void onDestroy()
-    {
-        // TODO Auto-generated method stub
+    protected void onDestroy() {
         Log.d(TAG, String.format("onDestroy()"));
 
         try {//try to un-register the listener
-            SharedPreferences settings =                PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
             if (settings != null) {
                 settings.unregisterOnSharedPreferenceChangeListener(onPreferenceChanged);
             }
@@ -88,12 +83,12 @@ public class TVGuidePreference extends PreferenceActivity
 
     /**
      * get version name
+     *
      * @param context
      * @param cls
      * @return
      */
-    public static String getVersionName(Context context, Class<?> cls)
-    {
+    public static String getVersionName(Context context, Class<?> cls) {
         try {
             PackageInfo info = getPackageInfo(context, cls);
             //return String.format("%s.%d", info.versionName, info.versionCode);
@@ -106,18 +101,32 @@ public class TVGuidePreference extends PreferenceActivity
 
     /**
      * get package info
+     *
      * @param context
      * @param cls
      * @return
      */
-    public static PackageInfo getPackageInfo(Context context, Class<?> cls)
-    {
+    public static PackageInfo getPackageInfo(Context context, Class<?> cls) {
         try {
             return context.getPackageManager().getPackageInfo(
-                new ComponentName(context, cls).getPackageName(), 0);
+                    new ComponentName(context, cls).getPackageName(), 0);
         } catch (android.content.pm.PackageManager.NameNotFoundException e) {
             Log.e(TAG, "getPackageInfo: " + e.getMessage());
         }
         return null;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //... // The rest of your onStart() code.
+        EasyTracker.getInstance(this).activityStart(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        //... // The rest of your onStop() code.
+        EasyTracker.getInstance(this).activityStop(this);
     }
 }

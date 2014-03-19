@@ -133,15 +133,18 @@ public class TVGuideProgramABF extends SherlockFragmentActivity implements
 
     @Override
     public void onDataReceived(ProgramItem progItem) {
+        long totalTime = System.currentTimeMillis() - mStartTime;
+        Log.v(TAG, String.format("done getting data: %dms", totalTime));
+
         EasyTracker easyTracker = EasyTracker.getInstance(this);
         if (easyTracker != null) {
             easyTracker.set(Fields.SCREEN_NAME, TAG);
             // MapBuilder.createEvent().build() returns a Map of event fields and values
             // that are set and sent with the hit.
-            easyTracker.send(MapBuilder.createEvent("UX",//Event category (required)
-                            "network",//Event action (required)
-                            "onDataReceived",//Event label
-                            System.currentTimeMillis() - mStartTime)//Event value
+            easyTracker.send(MapBuilder.createEvent("Network",//Event category (required)
+                            "onDataReceived",//Event action (required)
+                            null,//Event label
+                            /*totalTime*/null)//Event value
                             .build()
             );
         }

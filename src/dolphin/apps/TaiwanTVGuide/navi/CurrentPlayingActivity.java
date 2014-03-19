@@ -190,10 +190,10 @@ public class CurrentPlayingActivity extends Activity
             easyTracker.set(Fields.SCREEN_NAME, TAG);
             // MapBuilder.createEvent().build() returns a Map of event fields and values
             // that are set and sent with the hit.
-            easyTracker.send(MapBuilder.createEvent("UX",//Event category (required)
-                            "touch",//Event action (required)
-                            "selectItem",//Event label
-                            (long) position)//Event value
+            easyTracker.send(MapBuilder.createEvent("Navigation",//category (required)
+                            "selectItem",//Event action (required)
+                            group,//Event label
+                            null)//Event value
                             .build()
             );
         }
@@ -227,20 +227,29 @@ public class CurrentPlayingActivity extends Activity
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+
+        String action = "action";
+        String label = mPlanetTitles[mGroupIndex];
         // Handle your other action bar items...
         switch (item.getItemId()) {
             case R.id.program_option_refresh:
+                action = "refresh";
                 selectItem(mGroupIndex, System.currentTimeMillis());
                 return true;
             case R.id.preview_prev_day:
+                action = "prev_day";
                 selectItem(mGroupIndex, addPreviewDate(-1));
                 return true;
             case R.id.preview_next_day:
+                action = "next_day";
                 selectItem(mGroupIndex, addPreviewDate(1));
                 return true;
             case R.id.preview_option_expand:
                 break;
-            case R.id.preference: {
+            case R.id.preference:
+                action = "preference";
+                label = null;
+            {
                 Intent intent2 = new Intent();
                 //intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent2.setClass(CurrentPlayingActivity.this,
@@ -248,7 +257,9 @@ public class CurrentPlayingActivity extends Activity
                 startActivityForResult(intent2, 0);
             }
             return true;
-            case R.id.action_browser: {
+            case R.id.action_browser:
+                action = "action_browser";
+            {
                 Intent intent3 = new Intent(Intent.ACTION_VIEW);
                 intent3.setData(Uri.parse(mUrl));
                 startActivityForResult(intent3, 0);
@@ -256,7 +267,13 @@ public class CurrentPlayingActivity extends Activity
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        EasyTracker easyTracker = EasyTracker.getInstance(this);
+        if (easyTracker != null) {
+            easyTracker.set(Fields.SCREEN_NAME, TAG);
+            easyTracker.send(MapBuilder.createEvent("ActionBar",
+                    action, label, null).build());
+        }
+        return true;//super.onOptionsItemSelected(item);
     }
 
     public long addPreviewDate(int day) {
@@ -285,10 +302,10 @@ public class CurrentPlayingActivity extends Activity
             easyTracker.set(Fields.SCREEN_NAME, TAG);
             // MapBuilder.createEvent().build() returns a Map of event fields and values
             // that are set and sent with the hit.
-            easyTracker.send(MapBuilder.createEvent("UX",//Event category (required)
-                            "touch",//Event action (required)
-                            "onNavigationItemSelected",//Event label
-                            (long) i)//Event value
+            easyTracker.send(MapBuilder.createEvent("Navigation",//category (required)
+                            "onNavigationItemSelected",//Event action (required)
+                            getResources().getStringArray(R.array.list_type)[i],//label
+                            null)//Event value
                             .build()
             );
         }
