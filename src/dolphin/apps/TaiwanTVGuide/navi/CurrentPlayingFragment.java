@@ -145,8 +145,7 @@ public class CurrentPlayingFragment extends Fragment {
                         mExpandAll = true;//force override
                         break;
                     case 1:
-                        mChannelList = mHelper.get_group_guide_list(mPreviewDate,
-                                mGroupId);
+                        mChannelList = mHelper.get_group_guide_list(mPreviewDate, mGroupId);
                         break;
                 }
                 mIsLoading = false;
@@ -196,7 +195,7 @@ public class CurrentPlayingFragment extends Fragment {
                 group.add(chan.Name);
 
                 List<String> item = new ArrayList<String>();
-                if (!mShowTodayAll
+                if (!mShowTodayAll && mListType != 0
                         && now.get(Calendar.YEAR) == mPreviewDate.get(Calendar.YEAR)
                         && mPreviewDate.get(Calendar.MONTH) == now.get(Calendar.MONTH)
                         && now.get(Calendar.DAY_OF_MONTH) == mPreviewDate.get(Calendar.DAY_OF_MONTH)) {

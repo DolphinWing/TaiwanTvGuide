@@ -7,6 +7,9 @@ https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 ● 現正播放以及下一部即將播放的電影
 ● 支援IMDb app (if has)
 --
+[57] @ 2014-03-23
+    現正播放不必檢查時間
+
 [56] @ 2014-03-20
     change EasyTracker data
 

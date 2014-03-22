@@ -43,8 +43,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
         return true;
     }
 
-    public ArrayList<ChannelItem> get_group_guide_list(Calendar cal,
-                                                       String group_id) {
+    public ArrayList<ChannelItem> get_group_guide_list(Calendar cal, String group_id) {
         String url = String.format("%s/%s", ATMOVIES_TV_URL,
                 mContext.getString(R.string.url_group_guide));
         // Log.d(TAG, url);
@@ -111,9 +110,10 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                         if (item != null) {
                             // item.Date = cal;
                             item.Date = Calendar.getInstance();
-                            item.Date.set(cal.get(Calendar.YEAR),
-                                    cal.get(Calendar.MONTH),
-                                    cal.get(Calendar.DAY_OF_MONTH));
+                            //item.Date.set(cal.get(Calendar.YEAR),
+                            //        cal.get(Calendar.MONTH),
+                            //        cal.get(Calendar.DAY_OF_MONTH));
+                            item.Date.setTimeInMillis(cal.getTimeInMillis());
                             String time = mProgram.group(1);
                             // Log.d(TAG, String.format("=== %s", time));
                             int hour =
@@ -138,8 +138,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                         i++;
                     }
                 } catch (Exception e1) {
-                    Log.e(TAG, String.format(
-                            "get_group_guide_list date: %s, %s",
+                    Log.e(TAG, String.format("get_group_guide_list date: %s, %s",
                             this.getClass().getName(), e1.getMessage()));
                 }
                 try {// try to parse URL
@@ -317,8 +316,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
 			 * "attv.cfm?action=channeltime&tday=2011-04-14&channel_id=CH50"
 			 * >緯來日本台</a>&nbsp;&nbsp;</td>
 			 */
-            String pattern =
-                    "<td nowrap[^<]*<a tar[^ ]* href=\"([^\"]*)\">([^<]*)</";
+            String pattern = "<td nowrap[^<]*<a tar[^ ]* href=\"([^\"]*)\">([^<]*)</";
             Matcher mTitle = Pattern.compile(pattern).matcher(response);
             String srcHtml = response;
             if (srcHtml.contains("<!--blank row-->"))//[54]++
@@ -361,8 +359,8 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
 //                if (programHtml.contains("<font color=#ff0000>☆</font>"))//[1.3.2] add if
 //                    programHtml = programHtml.replace("<font color=#ff0000>☆</font>", "");
 
-                String pat =
-                        "<font class=at9[^>]*>([^<]*)<[^<]*<a target[^ ]* href=\"([^\"]*)\">([^<]+)</";
+                String pat = "<font class=at9[^>]*>([^<]*)<[^<]*"
+                        + "<a target[^ ]* href=\"([^\"]*)\">([^<]+)</";
                 Matcher mProgram = Pattern.compile(pat).matcher(programHtml);
                 int i = 0;
                 while (mProgram.find()) {

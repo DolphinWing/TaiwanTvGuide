@@ -135,13 +135,13 @@ public class CurrentPlayingActivity extends Activity
         mShowTodayAll = mPrefs.getBoolean("dTVGuide_ShowTodayAll", true);
         mExpandAll = mPrefs.getBoolean("dTVGuide_ExpendAll", false);
         new Handler().post(new Runnable() {
-                               @Override
-                               public void run() {
-                                   mGroupIndex = (!mPrefs.contains("dTVGuide_DefaultGroup")) ? 5
-                                           : Integer.parseInt(mPrefs.getString("dTVGuide_DefaultGroup", "5"));
-                                   //selectItem(mGroupIndex, System.currentTimeMillis());
-                               }
-                           }
+               @Override
+               public void run() {
+                   mGroupIndex = (!mPrefs.contains("dTVGuide_DefaultGroup")) ? 5
+                           : Integer.parseInt(mPrefs.getString("dTVGuide_DefaultGroup", "5"));
+                   //selectItem(mGroupIndex, System.currentTimeMillis());
+               }
+           }
         );
     }
 
