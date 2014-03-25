@@ -7,6 +7,7 @@ import com.quanta.pobu.net.QHttpHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -109,7 +110,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                         ProgramItem item = channel.Programs.get(i);
                         if (item != null) {
                             // item.Date = cal;
-                            item.Date = Calendar.getInstance();
+                            item.Date = getNowTime();
                             //item.Date.set(cal.get(Calendar.YEAR),
                             //        cal.get(Calendar.MONTH),
                             //        cal.get(Calendar.DAY_OF_MONTH));
@@ -246,8 +247,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
 			 * >04/09</a> 23:00</td> <tr><td align=center><a
 			 */
             try {
-                String repHtml = programHtml.substring(programHtml
-                        .indexOf("<font color=303099"));
+                String repHtml = programHtml.substring(programHtml.indexOf("<font color=303099"));
                 repHtml = repHtml.substring(0, repHtml.indexOf("<form"));
                 if (repHtml != null) {
                     String repPattern = "<a[^>]*>([^<]*)<[^>]*>([^<]*)";
@@ -257,7 +257,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                         String replay_date = mRep.group(1).trim();
                         String replay_time = mRep.group(2).trim();
                         Log.v(TAG, "  " + replay_date + " " + replay_time);
-                        Calendar cal = Calendar.getInstance();
+                        Calendar cal = getNowTime();
                         try {
                             int month = Integer.parseInt(replay_date.split("/")[0]);
                             int day_of_month = Integer.parseInt(replay_date.split("/")[1]);
@@ -269,7 +269,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                             cal.set(Calendar.MINUTE, mins);
                             cal.set(Calendar.SECOND, 0);
 
-                            if (cal.before(Calendar.getInstance())) {
+                            if (cal.before(getNowTime())) {
                                 continue;//time has passed
                             }
                         } catch (Exception eSpl) {
@@ -367,13 +367,12 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                     // Log.d(TAG, String.format("=== %s", mProgram.group(1)));
                     ProgramItem item = new ProgramItem(mProgram.group(3));
 
-                    item.Date = Calendar.getInstance();
-                    String time = mProgram.group(1);
+                    item.Date = getNowTime();
+                    String time = mProgram.group(1).trim();
                     // Log.d(TAG, String.format("=== %s", time));
                     int hour = Integer.parseInt(time.substring(0, time.indexOf(":")));
                     int minute = Integer.parseInt(time.substring(time.indexOf(":") + 1));
-                    // Log.d(TAG, String.format("=== %d %02d:%02d", i,
-                    // hour, minute));
+                    // Log.d(TAG, String.format("=== %d %02d:%02d", i, hour, minute));
                     item.Date.set(Calendar.HOUR_OF_DAY, hour);
                     if (i == 0 && hour > 12) {
                         item.Date.add(Calendar.HOUR_OF_DAY, -24);
@@ -397,5 +396,9 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
         long endTime = System.currentTimeMillis();
         Log.v(TAG, String.format("wasted %d ms", (endTime - startTime)));
         return list;
+    }
+
+    public static Calendar getNowTime() {
+        return Calendar.getInstance(TimeZone.getTimeZone("GMT+8"));
     }
 }

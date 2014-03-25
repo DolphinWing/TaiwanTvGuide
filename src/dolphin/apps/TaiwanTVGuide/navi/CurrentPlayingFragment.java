@@ -84,7 +84,7 @@ public class CurrentPlayingFragment extends Fragment {
         //Log.d(TAG, "onCreate");
 
         if (mPreviewDate == null)
-            mPreviewDate = Calendar.getInstance();
+            mPreviewDate = AtMoviesTVHttpHelper.getNowTime();
 
         SharedPreferences settings =
                 PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -119,7 +119,7 @@ public class CurrentPlayingFragment extends Fragment {
                 bIsExpand = args.getBoolean(ARG_IS_EXPAND);
             if (args.containsKey(ARG_PREVIEW_DATE)) {
                 if (mPreviewDate == null)
-                    mPreviewDate = Calendar.getInstance();
+                    mPreviewDate = AtMoviesTVHttpHelper.getNowTime();
                 mPreviewDate.setTimeInMillis(args.getLong(ARG_PREVIEW_DATE));
             }
 
@@ -184,7 +184,7 @@ public class CurrentPlayingFragment extends Fragment {
 
     private void updateProgramList() {
         if (mChannelList.size() > 0) {
-            Calendar now = Calendar.getInstance();
+            Calendar now = AtMoviesTVHttpHelper.getNowTime();
             Log.v(TAG, String.format("NOW: %02d/%02d %02d:%02d",
                     now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH),
                     now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE)));
@@ -195,10 +195,8 @@ public class CurrentPlayingFragment extends Fragment {
                 group.add(chan.Name);
 
                 List<String> item = new ArrayList<String>();
-                if (!mShowTodayAll && mListType != 0
-                        && now.get(Calendar.YEAR) == mPreviewDate.get(Calendar.YEAR)
-                        && mPreviewDate.get(Calendar.MONTH) == now.get(Calendar.MONTH)
-                        && now.get(Calendar.DAY_OF_MONTH) == mPreviewDate.get(Calendar.DAY_OF_MONTH)) {
+                if (!mShowTodayAll //[58]-- && mListType != 0
+                        && DateUtils.isToday(mPreviewDate.getTimeInMillis())) {
                     boolean bAfterProgram = false;
                     for (int j = 1; j < chan.Programs.size(); j++) {
                         ProgramItem program = chan.Programs.get(j);
