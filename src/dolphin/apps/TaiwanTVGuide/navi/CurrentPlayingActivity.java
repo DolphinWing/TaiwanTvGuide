@@ -309,7 +309,7 @@ public class CurrentPlayingActivity extends Activity
                             .build()
             );
         }
-        mPreviewDate = Calendar.getInstance();
+        mPreviewDate = AtMoviesTVHttpHelper.getNowTime();
         selectItem(mGroupIndex, mPreviewDate.getTimeInMillis());
         invalidateOptionsMenu();
         return true;

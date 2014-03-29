@@ -124,7 +124,8 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                             // Log.d(TAG, String.format("=== %d %02d:%02d", i,
                             // hour, minute));
                             if (i == 0 && hour > 12) {
-                                item.Date.add(Calendar.HOUR_OF_DAY, -24);
+                                //[59]-- item.Date.add(Calendar.HOUR_OF_DAY, -24);
+                                item.Date.add(Calendar.DAY_OF_YEAR, -1);//[59]++
                             }
                             item.Date.set(Calendar.HOUR_OF_DAY, hour);
                             item.Date.set(Calendar.MINUTE, minute);
@@ -375,7 +376,8 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                     // Log.d(TAG, String.format("=== %d %02d:%02d", i, hour, minute));
                     item.Date.set(Calendar.HOUR_OF_DAY, hour);
                     if (i == 0 && hour > 12) {
-                        item.Date.add(Calendar.HOUR_OF_DAY, -24);
+                        //[59]-- item.Date.add(Calendar.HOUR_OF_DAY, -24);
+                        item.Date.add(Calendar.DAY_OF_YEAR, -1);//[59]++
                     }
                     item.Date.set(Calendar.MINUTE, minute);
 

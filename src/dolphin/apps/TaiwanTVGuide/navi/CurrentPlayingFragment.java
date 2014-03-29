@@ -195,7 +195,7 @@ public class CurrentPlayingFragment extends Fragment {
                 group.add(chan.Name);
 
                 List<String> item = new ArrayList<String>();
-                if (!mShowTodayAll //[58]-- && mListType != 0
+                if (!mShowTodayAll && mListType != 0
                         && DateUtils.isToday(mPreviewDate.getTimeInMillis())) {
                     boolean bAfterProgram = false;
                     for (int j = 1; j < chan.Programs.size(); j++) {
@@ -267,7 +267,7 @@ public class CurrentPlayingFragment extends Fragment {
                     if (channel != null) {
 
                         int child = childPosition;
-                        if (!mShowTodayAll
+                        if (!mShowTodayAll && mListType != 0
                                 && DateUtils.isToday(mPreviewDate.getTimeInMillis())) {
                             child += mChannelProgramStartIndex.get(groupPosition).intValue();
                         }// [1.0.0.7]dolphin++ if only show partial program
