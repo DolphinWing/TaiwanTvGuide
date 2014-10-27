@@ -3,21 +3,24 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.4'
+        classpath 'com.android.tools.build:gradle:0.13.2'
     }
 }
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 dependencies {
+    compile 'com.android.support:support-v4:21.0.0'
+    //compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
 }
 
 android {
-    compileSdkVersion 14
-    buildToolsVersion "14"
+    compileSdkVersion 19
+    buildToolsVersion "21.0.1"
 
     defaultConfig {
-        minSdkVersion 8
+        minSdkVersion 14
         targetSdkVersion 19
+        versionCode 62
     }
     sourceSets {
         main {
@@ -30,6 +33,6 @@ android {
             assets.srcDirs = ['assets']
         }
 
-        instrumentTest.setRoot('tests')
+        //instrumentTest.setRoot('tests')
     }
 }

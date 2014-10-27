@@ -1,102 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="dolphin.apps.TaiwanTVGuide"
-          android:versionCode="59"
-          android:versionName="1.3.6">
+    package="dolphin.apps.TaiwanTVGuide"
+    android:versionName="1.5.0">
 
-    <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="19"/>
-
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature
         android:name="android.hardware.screen.portrait"
-        android:required="false"/>
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.screen.landscape"
-        android:required="false"/>
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.touchscreen"
-        android:required="false"/>
+        android:required="false" />
 
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:allowBackup="true">
-        <activity
-            android:name=".TVGuidePreview"
-            android:label="@string/app_name"
-            android:screenOrientation="nosensor"
-            android:enabled="false">
-        </activity>
-        <activity
-            android:name="TVGuideProgram"
-            android:screenOrientation="nosensor"
-            android:enabled="false">
-        </activity>
+
         <activity
             android:name="TVGuidePreference"
             android:label="@string/preference"
-            android:screenOrientation="nosensor"
-            android:theme="@style/Theme.Holo_orange_dark">
-        </activity>
-        <activity
-            android:name="TVGuidePlaying"
-            android:screenOrientation="nosensor"
-            android:enabled="false">
+            android:screenOrientation="locked"
+            android:theme="@android:style/Theme.Holo"/>
 
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
         <activity
             android:name="TVGuideWebView"
-            android:theme="@style/Theme.Sherlock.Light.NoActionBar">
-        </activity>
-        <activity
-            android:name=".abs.TVGuideNowPlayingAB"
-            android:label="@string/now_playing"
-            android:screenOrientation="nosensor"
-            android:uiOptions="splitActionBarWhenNarrow">
+            android:theme="@android:style/Theme.Holo.NoActionBar"
+            android:screenOrientation="locked"/>
 
-            <!--
-            [30] add splash screen activity
+        <activity
+            android:name=".navi.TVGuideProgramABF"
+            android:screenOrientation="locked"/>
+        <activity
+            android:name=".abs.SplashActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
-        <activity
-            android:name=".abs.TVGuidePreviewAB"
-            android:label="@string/guide_list"
-            android:screenOrientation="nosensor"
-            android:uiOptions="splitActionBarWhenNarrow">
-        </activity>
-        <activity
-            android:name=".abs.TVGuideProgramABF"
-            android:screenOrientation="nosensor">
-        </activity>
-        <activity
-            android:name=".abs.SplashActivity"
-            android:theme="@style/Theme.Sherlock.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".navi.CurrentPlayingActivity"
             android:screenOrientation="locked"
-            android:theme="@style/Theme.Holo_orange_dark"/>
+            android:theme="@android:style/Theme.Holo" />
 
     </application>
 

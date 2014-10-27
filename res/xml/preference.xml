@@ -7,26 +7,26 @@
         android:entryValues="@array/channel_group_index"
         android:entries="@array/channel_group"
         android:title="@string/pref_default_group"
-        android:summary="@string/pref_default_group_summary"></ListPreference>
+        android:summary="@string/pref_default_group_summary"/>
     <PreferenceCategory android:title="@string/guide_list">
         <CheckBoxPreference
             android:key="dTVGuide_ShowTodayAll"
             android:defaultValue="true"
             android:summaryOn="@string/pref_show_today_all_summary_on"
             android:summaryOff="@string/pref_show_today_all_summary_off"
-            android:title="@string/pref_show_today_all"></CheckBoxPreference>
+            android:title="@string/pref_show_today_all"/>
         <CheckBoxPreference
             android:key="dTVGuide_ExpendAll"
             android:defaultValue="false"
             android:summaryOn="@string/pref_expand_all_summary_on"
             android:summaryOff="@string/pref_expand_all_summary_off"
-            android:title="@string/pref_expand_all"></CheckBoxPreference>
+            android:title="@string/pref_expand_all"/>
 
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/build_information">
         <Preference
             android:key="dTVGuide_VersionInfo"
-            android:title="@string/build_information"></Preference>
+            android:title="@string/build_information"/>
     </PreferenceCategory>
 </PreferenceScreen>

@@ -11,7 +11,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.google.analytics.tracking.android.EasyTracker;
+//import com.google.analytics.tracking.android.EasyTracker;
 
 public class TVGuidePreference extends PreferenceActivity {
     private static final String TAG = "TVGuidePreference";
@@ -116,17 +116,17 @@ public class TVGuidePreference extends PreferenceActivity {
         return null;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        //... // The rest of your onStart() code.
-        EasyTracker.getInstance(this).activityStart(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        //... // The rest of your onStop() code.
-        EasyTracker.getInstance(this).activityStop(this);
-    }
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        //... // The rest of your onStart() code.
+//        EasyTracker.getInstance(this).activityStart(this);
+//    }
+//
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        //... // The rest of your onStop() code.
+//        EasyTracker.getInstance(this).activityStop(this);
+//    }
 }

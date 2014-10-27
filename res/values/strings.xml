@@ -14,6 +14,7 @@
     <string name="abort">取消</string>
     <string name="open_wifi_setup">Wi-Fi 設置</string>
     <string name="now_playing">現正播映</string>
+    <string name="all_show">所有節目</string>
     <string name="guide_list">今日節目表</string>
     <string name="build_information">版本資訊</string>
     <string name="pref_expand_all">展開所有頻道</string>
@@ -28,5 +29,6 @@
     <string name="recent_replays">最近重播時間</string>
     <string name="refresh">刷新</string>
     <string name="guide_intro">節目介紹</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

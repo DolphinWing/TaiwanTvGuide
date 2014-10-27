@@ -8,4 +8,5 @@
          screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
     -->
     <dimen name="activity_horizontal_margin">0dp</dimen>
+    <dimen name="material_horizontal_margin">16dp</dimen>
 </resources>
