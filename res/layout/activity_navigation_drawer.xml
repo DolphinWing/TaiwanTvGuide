@@ -14,7 +14,7 @@
         android:id="@+id/left_drawer"
         android:layout_width="240dp"
         android:layout_height="match_parent"
-        android:background="@android:color/background_dark"
+        android:background="#ff0f0906"
         android:layout_gravity="start"
         android:orientation="vertical">
 

@@ -230,8 +230,6 @@ public class CurrentPlayingActivity extends Activity
 //                action = "next_day";
                 selectItem(mGroupIndex, addPreviewDate(1));
                 return true;
-            case R.id.preview_option_expand:
-                break;
             case R.id.preference:
 //                action = "preference";
 //                label = null;
