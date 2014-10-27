@@ -52,9 +52,9 @@ public class ProgramItem
 		String str = "";
 		try {
 			str += "[ " + Name + " " + Date.toString();
-			for (int i = 0; i < Replays.size(); i++) {
-				str += " " + Replays.get(i).toString();
-			}
+            for (Calendar Replay : Replays) {
+                str += " " + Replay.toString();
+            }
 			str += " ]";
 		} catch (Exception e) {
 			return super.toString();

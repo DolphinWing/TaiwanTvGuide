@@ -61,7 +61,7 @@ public class QHttpHelper
 	 * Shared buffer used by {@link #getUrlContent(String)} when reading results
 	 * from an API request.
 	 */
-	private static byte[] sBuffer = new byte[512];
+	private static final byte[] sBuffer = new byte[512];
 
 	/**
 	 * User-agent string to use when making requests. Should be filled using
@@ -149,7 +149,7 @@ public class QHttpHelper
 			ByteArrayOutputStream content = new ByteArrayOutputStream();
 
 			// Read response into a buffered stream
-			int readBytes = 0;
+			int readBytes;
 			while ((readBytes = inputStream.read(sBuffer)) != -1) {
 				content.write(sBuffer, 0, readBytes);
 			}
@@ -186,7 +186,7 @@ public class QHttpHelper
 	public static synchronized String getUrlContent(String url, int timeout)
 			throws Exception
 	{
-		return getUrlContent(url, DEFAULT_NETWORK_TIMEOUT, ENCODE_UTF8);
+		return getUrlContent(url, timeout, ENCODE_UTF8);
 	}
 
 	public static synchronized String getUrlContent(String url)
@@ -303,7 +303,7 @@ public class QHttpHelper
 	public static synchronized boolean getRemoteImage(Context context,
 			URL aURL, String fileName, int timeout)
 	{
-		boolean result = false;
+		boolean result;
 		try {
 			URLConnection conn = aURL.openConnection();
 			conn.setReadTimeout(timeout);
@@ -456,8 +456,8 @@ public class QHttpHelper
 		//http://stackoverflow.com/a/5176670
 
 		HttpURLConnection conn = null;
-		DataOutputStream dos = null;
-		DataInputStream inStream = null;
+		DataOutputStream dos;
+		DataInputStream inStream;
 		//String existingFileName =
 		//	Environment.getExternalStorageDirectory().getAbsolutePath()
 		//		+ "/mypic.png";
@@ -533,8 +533,10 @@ public class QHttpHelper
 			inStream.close();
 			Log.d(TAG, responseFromServer);
 		}
-		catch (IOException ioex) {
-			Log.e(TAG, "error: " + ioex.getMessage(), ioex);
+        catch (NullPointerException e) {
+            Log.e(TAG, "NullPointerException: " + e.getMessage());
+        } catch (IOException e) {
+			Log.e(TAG, "IOException: " + e.getMessage(), e);
 		}
 
 		return responseFromServer;

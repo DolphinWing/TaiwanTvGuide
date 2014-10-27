@@ -7,7 +7,7 @@ import com.quanta.pobu.net.QHttpHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.TimeZone;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,7 +26,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
     public static final String KEY_PROGRAM_NAME = "PROGRAM_NAME";
     public static final String KEY_DATE = "DATE";
 
-    protected Context mContext;
+    private Context mContext;
 
     public AtMoviesTVHttpHelper(Context context) {
         mContext = context;
@@ -37,11 +37,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
         // Log.d(TAG, String.format("_init %s",
         // mContext.getString(R.string.app_name)));
 
-        if (!checkNeworkAvailable(mContext)) {
-            return false;
-        }
-
-        return true;
+        return checkNeworkAvailable(mContext);
     }
 
     public ArrayList<ChannelItem> get_group_guide_list(Calendar cal, String group_id) {
@@ -58,8 +54,8 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
 
         long startTime = System.currentTimeMillis();
         try {
-            String response = super.getUrlContent(url);// , ENCODE_BIG5);
-            if (response == null || response == "") {
+            String response = getUrlContent(url);// , ENCODE_BIG5);
+            if (response == null || response.isEmpty()) {
                 throw new Exception("no response");
             }
             // Log.d(TAG, String.format("response %d, %s", response.length(),
@@ -117,10 +113,9 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                             item.Date.setTimeInMillis(cal.getTimeInMillis());
                             String time = mProgram.group(1);
                             // Log.d(TAG, String.format("=== %s", time));
-                            int hour =
-                                    Integer.parseInt(time.substring(0, time.indexOf(":")));
-                            int minute =
-                                    Integer.parseInt(time.substring(time.indexOf(":") + 1));
+                            String[] ts = time.split(":");
+                            int hour = Integer.parseInt(ts[0]);
+                            int minute = Integer.parseInt(ts[1]);
                             // Log.d(TAG, String.format("=== %d %02d:%02d", i,
                             // hour, minute));
                             if (i == 0 && hour > 12) {
@@ -134,6 +129,8 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                             // .get(Calendar.DAY_OF_MONTH), item.Date
                             // .get(Calendar.HOUR_OF_DAY), item.Date
                             // .get(Calendar.MINUTE)));
+                            item.Date.set(Calendar.SECOND, 0);
+                            item.Date.set(Calendar.MILLISECOND, 0);
 
                             // item.Description = mProgram.group(1);
                         }
@@ -180,8 +177,8 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
 
         ProgramItem progItem = null;
         try {
-            String response = super.getUrlContent(url);// , ENCODE_BIG5);
-            if (response == null || response == "") {
+            String response = getUrlContent(url);// , ENCODE_BIG5);
+            if (response == null || response.isEmpty()) {
                 throw new Exception("no response");
             }
             // Log.d(TAG, String.format("response %d, %s", response.length(),
@@ -226,15 +223,11 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
 
             try {
                 String descHtml = programHtml.substring(programHtml.indexOf("<font class=at11"));
-                if (descHtml != null) {
-                    descHtml = descHtml.substring(0, descHtml.indexOf("<img"));
-                    descHtml = descHtml.replace("<BR><BR><P>", "\n");
-                    // descHtml = descHtml.replace("<[^>]*>", "");
-                    descHtml = QHttpHelper.removeHTML(descHtml);
-                    progItem.Description = descHtml;
-                } else {
-                    progItem.Description = null;
-                }
+                descHtml = descHtml.substring(0, descHtml.indexOf("<img"));
+                descHtml = descHtml.replace("<BR><BR><P>", "\n");
+                // descHtml = descHtml.replace("<[^>]*>", "");
+                descHtml = QHttpHelper.removeHTML(descHtml);
+                progItem.Description = descHtml;
             } catch (Exception eDesc) {
                 progItem.Description = null;
             }
@@ -250,35 +243,33 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
             try {
                 String repHtml = programHtml.substring(programHtml.indexOf("<font color=303099"));
                 repHtml = repHtml.substring(0, repHtml.indexOf("<form"));
-                if (repHtml != null) {
-                    String repPattern = "<a[^>]*>([^<]*)<[^>]*>([^<]*)";
-                    Matcher mRep = Pattern.compile(repPattern).matcher(repHtml);
-                    while (mRep.find()) {
-                        //[0.5.0.19] @ 2011-06-01 change the Replays from <String> to <Calendar>
-                        String replay_date = mRep.group(1).trim();
-                        String replay_time = mRep.group(2).trim();
-                        Log.v(TAG, "  " + replay_date + " " + replay_time);
-                        Calendar cal = getNowTime();
-                        try {
-                            int month = Integer.parseInt(replay_date.split("/")[0]);
-                            int day_of_month = Integer.parseInt(replay_date.split("/")[1]);
-                            cal.set(Calendar.MONTH, month - 1);
-                            cal.set(Calendar.DAY_OF_MONTH, day_of_month);
-                            int hour = Integer.parseInt(replay_time.split(":")[0]);
-                            int mins = Integer.parseInt(replay_time.split(":")[1]);
-                            cal.set(Calendar.HOUR_OF_DAY, hour);
-                            cal.set(Calendar.MINUTE, mins);
-                            cal.set(Calendar.SECOND, 0);
-
-                            if (cal.before(getNowTime())) {
-                                continue;//time has passed
-                            }
-                        } catch (Exception eSpl) {
-                            Log.e(TAG, "eSpl: " + eSpl.getMessage());
-                            continue;
+                String repPattern = "<a[^>]*>([^<]*)<[^>]*>([^<]*)";
+                Matcher mRep = Pattern.compile(repPattern).matcher(repHtml);
+                while (mRep.find()) {
+                    //[0.5.0.19] @ 2011-06-01 change the Replays from <String> to <Calendar>
+                    String replay_date = mRep.group(1).trim();
+                    String replay_time = mRep.group(2).trim();
+                    Log.v(TAG, "  " + replay_date + " " + replay_time);
+                    Calendar cal = getNowTime();
+                    try {
+                        int month = Integer.parseInt(replay_date.split("/")[0]);
+                        int day_of_month = Integer.parseInt(replay_date.split("/")[1]);
+                        cal.set(Calendar.MONTH, month - 1);
+                        cal.set(Calendar.DAY_OF_MONTH, day_of_month);
+                        int hour = Integer.parseInt(replay_time.split(":")[0]);
+                        int mins = Integer.parseInt(replay_time.split(":")[1]);
+                        cal.set(Calendar.HOUR_OF_DAY, hour);
+                        cal.set(Calendar.MINUTE, mins);
+                        cal.set(Calendar.SECOND, 0);
+                        cal.set(Calendar.MILLISECOND, 0);
+                        if (cal.before(getNowTime())) {
+                            continue;//time has passed
                         }
-                        progItem.Replays.add(cal);
+                    } catch (Exception eSpl) {
+                        Log.e(TAG, "eSpl: " + eSpl.getMessage());
+                        continue;
                     }
+                    progItem.Replays.add(cal);
                 }
             } catch (Exception eRep) {
                 Log.e(TAG, eRep.getMessage());
@@ -303,7 +294,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
 
         long startTime = System.currentTimeMillis();
         try {
-            String response = super.getUrlContent(url);// , ENCODE_BIG5);
+            String response = getUrlContent(url);// , ENCODE_BIG5);
             if (response == null || response == "") {
                 throw new Exception("no response");
             }
@@ -380,6 +371,8 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                         item.Date.add(Calendar.DAY_OF_YEAR, -1);//[59]++
                     }
                     item.Date.set(Calendar.MINUTE, minute);
+                    item.Date.set(Calendar.SECOND, 0);
+                    item.Date.set(Calendar.MILLISECOND, 0);
 
                     item.Url = mProgram.group(2);
                     // Log.d(TAG, item.Url);
@@ -401,6 +394,6 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
     }
 
     public static Calendar getNowTime() {
-        return Calendar.getInstance(TimeZone.getTimeZone("GMT+8"));
+        return Calendar.getInstance(Locale.TAIWAN);
     }
 }

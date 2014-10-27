@@ -15,9 +15,9 @@ public class GuideExpandableListAdapter extends BaseExpandableListAdapter {
     //http://www.iteye.com/topic/620297
     //http://www.cnblogs.com/salam/archive/2010/10/05/1844392.html
 
-    private Context mContext;
-    private List<String> mGroup;
-    private List<List<String>> mChildren;
+    private final Context mContext;
+    private final List<String> mGroup;
+    private final List<List<String>> mChildren;
 
     public GuideExpandableListAdapter(Context context, List<String> group,
                                       List<List<String>> children) {
@@ -74,7 +74,7 @@ public class GuideExpandableListAdapter extends BaseExpandableListAdapter {
 
     //View stub to create Group/Children 's View
     //public TextView getGenericView(String s, int h)
-    public View getGenericView(String s, int layout) {
+    View getGenericView(String s, int layout) {
 //		// Layout parameters for the ExpandableListView
 //		AbsListView.LayoutParams lp =
 //			new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, h);

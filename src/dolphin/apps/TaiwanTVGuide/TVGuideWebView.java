@@ -9,10 +9,8 @@ import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 
 public class TVGuideWebView extends Activity
 {
-
-	String tv_url = "";
-	String myUrl = "";
-	WebView webview;
+	private String myUrl = "";
+	private WebView webview;
 
 	/** Called when the activity is first created. */
 	@Override

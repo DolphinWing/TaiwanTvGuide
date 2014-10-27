@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
+import android.support.v4.widget.DrawerLayout;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,15 +19,11 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import dolphin.apps.TaiwanTVGuide.R;
-import dolphin.apps.TaiwanTVGuide.abs.TVGuideProgramABF;
 import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 import dolphin.apps.TaiwanTVGuide.provider.ChannelItem;
 import dolphin.apps.TaiwanTVGuide.provider.GuideExpandableListAdapter;
@@ -56,7 +53,8 @@ public class CurrentPlayingFragment extends Fragment {
     private boolean mShowTodayAll = true;
     private boolean mExpandAll = false;
     private ArrayList<Integer> mChannelProgramStartIndex;
-    boolean bIsExpand = false;
+    private boolean bIsExpand = false;
+    private DrawerLayout mDrawerLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -132,8 +130,15 @@ public class CurrentPlayingFragment extends Fragment {
 
     private void downloadData() {
         mChannelProgramStartIndex = new ArrayList<Integer>();
-        final EasyTracker easyTracker = EasyTracker.getInstance(getActivity());
         final long startTime = System.currentTimeMillis();
+        //[62]++ lock drawer
+        if (getActivity() != null && getActivity().getActionBar() != null) {
+            getActivity().getActionBar().setHomeButtonEnabled(false);
+            getActivity().setProgressBarIndeterminateVisibility(true);
+        }
+        if (mDrawerLayout != null) {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
 
         new Thread(new Runnable() {
             @Override
@@ -151,14 +156,6 @@ public class CurrentPlayingFragment extends Fragment {
                 mIsLoading = false;
                 long totalTime = System.currentTimeMillis() - startTime;
                 Log.v(TAG, String.format("done getting data: %dms", totalTime));
-                if (easyTracker != null) {
-                    easyTracker.send(MapBuilder.createEvent("Network",//category (required)
-                                    "downloadData",//action (required)
-                                    String.format("type=%d", mListType),//label
-                                    /*totalTime*/null)//Event value
-                                    .build()
-                    );
-                }
 
                 if (getActivity() != null)
                     getActivity().runOnUiThread(new Runnable() {
@@ -167,15 +164,25 @@ public class CurrentPlayingFragment extends Fragment {
                             //Log.d(TAG, "update UI");
                             updateProgramList();
 
-                            if (mChannelList != null && mChannelList.size() > 0)
-                                getActivity().setTitle(String.format("%s %d/%d",
-                                        mGroup.split(" ")[0],
-                                        mPreviewDate.get(Calendar.MONTH) + 1,
-                                        mPreviewDate.get(Calendar.DAY_OF_MONTH)));
-                            else if (mEmptyView != null)
+                            if (mChannelList != null && mChannelList.size() > 0) {
+//                                getActivity().setTitle(String.format("%s %d/%d",
+//                                        mGroup.split(" ")[0],
+//                                        mPreviewDate.get(Calendar.MONTH) + 1,
+//                                        mPreviewDate.get(Calendar.DAY_OF_MONTH)));
+                            } else if (mEmptyView != null) {
                                 mEmptyView.setVisibility(View.VISIBLE);
-                            if (mLoadingView != null)
+                            }
+                            if (mLoadingView != null) {
                                 mLoadingView.setVisibility(View.GONE);
+                            }
+                            //[62]++ unlock drawer
+                            if (getActivity() != null && getActivity().getActionBar() != null) {
+                                getActivity().setProgressBarIndeterminateVisibility(false);
+                                getActivity().getActionBar().setHomeButtonEnabled(true);
+                            }
+                            if (mDrawerLayout != null) {
+                                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                            }
                         }
                     });
             }
@@ -190,8 +197,7 @@ public class CurrentPlayingFragment extends Fragment {
                     now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE)));
             List<String> group = new ArrayList<String>();
             List<List<String>> child = new ArrayList<List<String>>();
-            for (int i = 0; i < mChannelList.size(); i++) {
-                ChannelItem chan = mChannelList.get(i);
+            for (ChannelItem chan : mChannelList) {
                 group.add(chan.Name);
 
                 List<String> item = new ArrayList<String>();
@@ -205,7 +211,7 @@ public class CurrentPlayingFragment extends Fragment {
                                 continue;
                             }
                             // after now, get current playing program
-                            mChannelProgramStartIndex.add(Integer.valueOf(j - 1));
+                            mChannelProgramStartIndex.add(j - 1);
                             add_channel_item(item, chan.Programs.get(j - 1));
                             bAfterProgram = true;// set later all insert to list
                         }
@@ -231,13 +237,13 @@ public class CurrentPlayingFragment extends Fragment {
         }
     }
 
-    protected void add_channel_item(List<String> item, ProgramItem prog) {
+    void add_channel_item(List<String> item, ProgramItem prog) {
         item.add(String.format("%02d:%02d  %s",
                 prog.Date.get(Calendar.HOUR_OF_DAY),
                 prog.Date.get(Calendar.MINUTE), prog.Name));
     }
 
-    protected void expand_all(boolean bExpand) {
+    void expand_all(boolean bExpand) {
         bIsExpand = bExpand;// [1.0.0.6]dolphin++
         ExpandableListAdapter adapter = mListView.getExpandableListAdapter();
         if (adapter != null)
@@ -250,7 +256,7 @@ public class CurrentPlayingFragment extends Fragment {
             }
     }
 
-    private ExpandableListView.OnChildClickListener OnChildClick =
+    private final ExpandableListView.OnChildClickListener OnChildClick =
             new ExpandableListView.OnChildClickListener() {
 
                 @Override
@@ -269,7 +275,7 @@ public class CurrentPlayingFragment extends Fragment {
                         int child = childPosition;
                         if (!mShowTodayAll && mListType != 0
                                 && DateUtils.isToday(mPreviewDate.getTimeInMillis())) {
-                            child += mChannelProgramStartIndex.get(groupPosition).intValue();
+                            child += mChannelProgramStartIndex.get(groupPosition);
                         }// [1.0.0.7]dolphin++ if only show partial program
                         // Log.d(TAG, String.format("%d %d", groupPosition,child));
 
@@ -280,8 +286,8 @@ public class CurrentPlayingFragment extends Fragment {
                 }
             };
 
-    public static void startProgramActivity(Context context, Calendar previewDate,
-                                            ChannelItem channel, ProgramItem program) {
+    private static void startProgramActivity(Context context, Calendar previewDate,
+                                             ChannelItem channel, ProgramItem program) {
         Intent intent = new Intent();
         //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setClass(context, TVGuideProgramABF.class);
@@ -310,7 +316,7 @@ public class CurrentPlayingFragment extends Fragment {
     }
 
     //[50]++
-    private ExpandableListView.OnItemLongClickListener OnChildLongClick =
+    private final ExpandableListView.OnItemLongClickListener OnChildLongClick =
             new ExpandableListView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view,
@@ -333,7 +339,7 @@ public class CurrentPlayingFragment extends Fragment {
                             int child = childPosition;
                             if (!mShowTodayAll
                                     && DateUtils.isToday(mPreviewDate.getTimeInMillis())) {
-                                child += mChannelProgramStartIndex.get(groupPosition).intValue();
+                                child += mChannelProgramStartIndex.get(groupPosition);
                             }// [1.0.0.7]dolphin++ if only show partial program
                             // Log.d(TAG, String.format("%d %d", groupPosition,child));
 
@@ -375,5 +381,9 @@ public class CurrentPlayingFragment extends Fragment {
                 CalendarContract.Events.AVAILABILITY_FREE);
 
         context.startActivity(calIntent);
+    }
+
+    public void setDrawerLayout(DrawerLayout drawer) {
+        mDrawerLayout = drawer;
     }
 }
