@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
+import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -16,6 +18,8 @@ import android.util.Log;
 public class TVGuidePreference extends PreferenceActivity {
     private static final String TAG = "TVGuidePreference";
     private boolean mValueUpdated = false;
+
+    private ListPreference mChannelCategory;
 
     /**
      * Called when the activity is first created.
@@ -32,16 +36,25 @@ public class TVGuidePreference extends PreferenceActivity {
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         if (settings != null) {
-            //			Editor editor = settings.edit();//start edit
-            //			editor.putBoolean("dTVGuide_Setup", true);
-            //			editor.commit();
-
             settings.registerOnSharedPreferenceChangeListener(onPreferenceChanged);
         }
+
+        //[65]dolphin++ set ListPreference summary
+        mChannelCategory = (ListPreference) findPreference("dTVGuide_DefaultGroup");
+        updateSummary(mChannelCategory);
+
+        //[65]dolphin++ remove no use preferences
+        getPreferenceScreen().removePreference(findPreference("list_group"));
 
         this.findPreference("dTVGuide_VersionInfo").setSummary(
                 getVersionName(getBaseContext(), TVGuidePreference.class));
         mValueUpdated = false;
+    }
+
+    private void updateSummary(Preference preference) {
+        if (preference == mChannelCategory) {
+            preference.setSummary(mChannelCategory.getEntry());
+        }
     }
 
     private final SharedPreferences.OnSharedPreferenceChangeListener onPreferenceChanged =
@@ -52,6 +65,7 @@ public class TVGuidePreference extends PreferenceActivity {
                         SharedPreferences sharedPreferences, String key) {
                     Log.d(TAG, String.format("KEY=%s", key));
                     mValueUpdated = true;
+                    updateSummary(findPreference(key));//[65]dolphin++ update summary
                 }
 
             };
@@ -116,17 +130,4 @@ public class TVGuidePreference extends PreferenceActivity {
         return null;
     }
 
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        //... // The rest of your onStart() code.
-//        EasyTracker.getInstance(this).activityStart(this);
-//    }
-//
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        //... // The rest of your onStop() code.
-//        EasyTracker.getInstance(this).activityStop(this);
-//    }
 }

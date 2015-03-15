@@ -29,6 +29,7 @@
     <string name="recent_replays">最近重播時間</string>
     <string name="refresh">刷新</string>
     <string name="guide_intro">節目介紹</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_program_list">ProgramListActivity</string>
+    <string name="title_activity_program_info">ProgramInfoActivity</string>
 
 </resources>

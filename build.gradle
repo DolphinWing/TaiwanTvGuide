@@ -3,24 +3,35 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.13.2'
+        classpath 'com.android.tools.build:gradle:1.1.0'
     }
 }
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.0'
+    compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.android.support:recyclerview-v7:22.0.0'
     //compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+    compile 'com.tonicartos:superslim:0.4.5'
+    compile 'com.android.support:appcompat-v7:22.0.0'
 }
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "21.0.1"
+    compileSdkVersion 22
+    buildToolsVersion "22.0"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 19
-        versionCode 62
+        targetSdkVersion 22
+        versionCode 66
+        versionName "1.6.1"
     }
     sourceSets {
         main {
@@ -28,7 +39,7 @@ android {
             java.srcDirs = ['src']
             resources.srcDirs = ['src']
             aidl.srcDirs = ['src']
-            renderscript.srcDirs = ['src']
+            //renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
         }

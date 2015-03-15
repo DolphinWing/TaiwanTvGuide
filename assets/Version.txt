@@ -2,11 +2,33 @@
 https://play.google.com/store/apps/details?id=dolphin.apps.TaiwanTVGuide
 https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 
-支援功能(最新: 1.3.6)
+支援功能(最新: 1.6.1)
 ● 從開眼電影網下載本日節目表
 ● 現正播放以及下一部即將播放的電影
 ● 支援IMDb app (if has)
+
 --
+[66] @ 2015-03-15
+    new theme and icon
+[65] @ 2015-03-15
+    upload new logo
+    fix day switch enable option menu
+
+[64] @ 2015-03-14
+    use TonicArtos SuperSLiM to do new Activity
+        https://github.com/TonicArtos/SuperSLiM
+    This new activity will download data in activity, not the way I used to be.
+    I will have another new program detail activity later
+
+[63] @ 2014-11-11
+    fix refresh icon shown when downloading from website
+
+[62] @ 2014-10-27
+[60] @ 2014-10-26
+    update to latest build tool and SDK
+    remove useless resources
+    change main theme back to blue
+
 [59] @ 2014-03-28
     fix r57 caused click crush
 

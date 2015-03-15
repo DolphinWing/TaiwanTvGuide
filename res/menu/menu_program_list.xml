@@ -1,0 +1,38 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="v7.ProgramListActivity">
+
+    <item
+        android:id="@+id/action_search_menu"
+        android:icon="@drawable/ic_action_action_list"
+        android:title="@string/select_group"
+        app:showAsAction="always|withText" />
+
+    <item
+        android:id="@+id/program_option_refresh"
+        android:icon="@drawable/ic_action_refresh"
+        android:title="@string/refresh"
+        app:showAsAction="withText" />
+
+    <group android:id="@+id/preview_option_group">
+        <item
+            android:id="@+id/preview_prev_day"
+            android:icon="@drawable/ic_action_nav_prev"
+            android:title="@string/previous_day" />
+        <item
+            android:id="@+id/preview_next_day"
+            android:icon="@drawable/ic_action_nav_next"
+            android:title="@string/next_day" />
+    </group>
+    <item
+        android:id="@+id/action_browser"
+        android:icon="@android:drawable/ic_menu_mapmode"
+        android:title="@string/atmovies_tv"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/preference"
+        android:icon="@drawable/ic_action_preference"
+        android:title="@string/preference"
+        app:showAsAction="never" />
+</menu>

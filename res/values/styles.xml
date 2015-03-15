@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.V7_Program" parent="Theme.AppCompat">
+        <item name="windowActionBar">false</item>
+        <!-- Remove system title bars; we will add the action bar ourselves. -->
+        <item name="android:windowNoTitle">true</item>
+
+        <item name="colorPrimary">@android:color/holo_orange_dark</item>
+        <item name="toolbarStyle">@style/Theme.V7_Program.Toolbar</item>
+    </style>
+
+    <style name="Theme.V7_Program.Toolbar" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="android:background">@android:color/holo_orange_dark</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+
+    <style name="Theme.V7_Program_Full" parent="Theme.AppCompat.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <!-- Remove system title bars; we will add the action bar ourselves. -->
+        <item name="android:windowNoTitle">true</item>
+
+        <item name="colorPrimary">@android:color/holo_orange_dark</item>
+        <item name="toolbarStyle">@style/Theme.V7_Program.Toolbar</item>
+    </style>
+</resources>

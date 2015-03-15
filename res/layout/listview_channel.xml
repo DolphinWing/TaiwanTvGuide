@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/holo_orange_light"
+    app:slm_isHeader="true">
+    <!--
+    app:slm_headerDisplay="start|sticky"
+    app:slm_isHeader="true"-->
 
     <TextView
         android:layout_height="wrap_content"
@@ -13,13 +19,10 @@
         android:maxLines="1"
         android:singleLine="true"
         android:text="@string/app_name"
-        android:textAppearance="@android:style/TextAppearance.Large"
-        android:paddingLeft="48dp"
+        android:textAppearance="@android:style/TextAppearance.Large.Inverse"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:paddingRight="8dp"
-        android:background="#a333"
-        android:textColor="@android:color/secondary_text_dark"/>
-
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" />
 
 </LinearLayout>

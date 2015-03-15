@@ -6,9 +6,10 @@
         android:key="dTVGuide_DefaultGroup"
         android:entryValues="@array/channel_group_index"
         android:entries="@array/channel_group"
-        android:title="@string/pref_default_group"
-        android:summary="@string/pref_default_group_summary"/>
-    <PreferenceCategory android:title="@string/guide_list">
+        android:title="@string/pref_default_group_summary"/>
+    <PreferenceCategory
+        android:key="list_group"
+        android:title="@string/guide_list">
         <CheckBoxPreference
             android:key="dTVGuide_ShowTodayAll"
             android:defaultValue="true"

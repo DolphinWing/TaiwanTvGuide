@@ -10,4 +10,5 @@
     -->
     <dimen name="activity_horizontal_margin">32dp</dimen>
     <dimen name="material_horizontal_margin">24dp</dimen>
+    <dimen name="toolbar_height">64dp</dimen>
 </resources>
