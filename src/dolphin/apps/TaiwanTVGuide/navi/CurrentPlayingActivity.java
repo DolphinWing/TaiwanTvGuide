@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Switch;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -48,6 +49,7 @@ public class CurrentPlayingActivity extends Activity
     private String mTitle;
     private View mLeftPane;
     private Switch mSwitch;
+    private CurrentPlayingFragment mFragment;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,20 +158,20 @@ public class CurrentPlayingActivity extends Activity
     private void selectItem(int position, long milliSeconds) {
         String group = mPlanetTitles[position];
         // Create a new fragment and specify the planet to show based on position
-        Fragment fragment = new CurrentPlayingFragment();
+        mFragment = new CurrentPlayingFragment();
         Bundle args = new Bundle();
         args.putString(CurrentPlayingFragment.ARG_CHANNEL_GROUP, group);
         args.putInt(CurrentPlayingFragment.ARG_LIST_TYPE, mSwitch.isChecked() ? 1 : 0);
         args.putBoolean(CurrentPlayingFragment.ARG_EXPAND_ALL, mExpandAll);
         args.putBoolean(CurrentPlayingFragment.ARG_SHOW_ALL, mShowTodayAll);
         args.putLong(CurrentPlayingFragment.ARG_PREVIEW_DATE, milliSeconds);
-        fragment.setArguments(args);
-        ((CurrentPlayingFragment)fragment).setDrawerLayout(mDrawerLayout);//[62]++ lock drawer
+        mFragment.setArguments(args);
+        mFragment.setDrawerLayout(mDrawerLayout);//[62]++ lock drawer
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, fragment)
+                .replace(R.id.content_frame, mFragment)
                 .commit();
 
         // Highlight the selected item, update the title, and close the drawer
@@ -225,10 +227,12 @@ public class CurrentPlayingActivity extends Activity
             case R.id.preview_prev_day:
 //                action = "prev_day";
                 selectItem(mGroupIndex, addPreviewDate(-1));
+                mTitle = new SimpleDateFormat("MM/dd", Locale.TAIWAN).format(mPreviewDate.getTime());
                 return true;
             case R.id.preview_next_day:
 //                action = "next_day";
                 selectItem(mGroupIndex, addPreviewDate(1));
+                mTitle = new SimpleDateFormat("MM/dd", Locale.TAIWAN).format(mPreviewDate.getTime());
                 return true;
             case R.id.preference:
 //                action = "preference";
@@ -264,7 +268,7 @@ public class CurrentPlayingActivity extends Activity
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mLeftPane);
-        menu.findItem(R.id.program_option_refresh).setVisible(!drawerOpen);
+        menu.findItem(R.id.program_option_refresh).setVisible(!drawerOpen && !mFragment.isLoading());
         menu.setGroupVisible(R.id.preview_option_group, !drawerOpen & mSwitch.isChecked());
         return super.onPrepareOptionsMenu(menu);
     }
