@@ -28,6 +28,7 @@ import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 import dolphin.apps.TaiwanTVGuide.provider.ChannelItem;
 import dolphin.apps.TaiwanTVGuide.provider.GuideExpandableListAdapter;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
+import dolphin.apps.TaiwanTVGuide.provider.Utils;
 
 /**
  * Created by dolphin on 2014/2/22.
@@ -45,7 +46,8 @@ public class CurrentPlayingFragment extends Fragment {
     private View mLoadingView;
     private View mEmptyView;
     private String mGroup, mGroupId = null;
-    private int mListType = 0;//0 as currently playing; 1 as today's show
+    //0 as currently playing; 1 as today's show
+    private int mListType = AtMoviesTVHttpHelper.TYPE_NOW_PLAYING;
     private AtMoviesTVHttpHelper mHelper;
     private ArrayList<ChannelItem> mChannelList = null;
     private boolean mIsLoading = true;
@@ -107,7 +109,7 @@ public class CurrentPlayingFragment extends Fragment {
             mGroup = args.getString(ARG_CHANNEL_GROUP);
             mGroupId = mGroup.split(" ")[1];
             //Log.d(TAG, "  groupId = " + mGroupId);
-            mListType = args.getInt(ARG_LIST_TYPE, 0);
+            mListType = args.getInt(ARG_LIST_TYPE, AtMoviesTVHttpHelper.TYPE_NOW_PLAYING);
             //Log.d(TAG, "  listType = " + mListType);
             if (args.containsKey(ARG_SHOW_ALL))
                 mShowTodayAll = args.getBoolean(ARG_SHOW_ALL);
@@ -131,6 +133,7 @@ public class CurrentPlayingFragment extends Fragment {
     private void downloadData() {
         mChannelProgramStartIndex = new ArrayList<Integer>();
         final long startTime = System.currentTimeMillis();
+        mIsLoading = true;
         //[62]++ lock drawer
         if (getActivity() != null && getActivity().getActionBar() != null) {
             getActivity().getActionBar().setHomeButtonEnabled(false);
@@ -145,11 +148,11 @@ public class CurrentPlayingFragment extends Fragment {
             public void run() {
                 //Log.d(TAG, "start getting data");
                 switch (mListType) {
-                    case 0:
+                    case AtMoviesTVHttpHelper.TYPE_NOW_PLAYING:
                         mChannelList = mHelper.get_showtime_list(mGroupId);
                         mExpandAll = true;//force override
                         break;
-                    case 1:
+                    case AtMoviesTVHttpHelper.TYPE_ALL_DAY:
                         mChannelList = mHelper.get_group_guide_list(mPreviewDate, mGroupId);
                         break;
                 }
@@ -179,6 +182,7 @@ public class CurrentPlayingFragment extends Fragment {
                             if (getActivity() != null && getActivity().getActionBar() != null) {
                                 getActivity().setProgressBarIndeterminateVisibility(false);
                                 getActivity().getActionBar().setHomeButtonEnabled(true);
+                                getActivity().invalidateOptionsMenu();
                             }
                             if (mDrawerLayout != null) {
                                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
@@ -201,7 +205,7 @@ public class CurrentPlayingFragment extends Fragment {
                 group.add(chan.Name);
 
                 List<String> item = new ArrayList<String>();
-                if (!mShowTodayAll && mListType != 0
+                if (!mShowTodayAll && mListType != AtMoviesTVHttpHelper.TYPE_NOW_PLAYING
                         && DateUtils.isToday(mPreviewDate.getTimeInMillis())) {
                     boolean bAfterProgram = false;
                     for (int j = 1; j < chan.Programs.size(); j++) {
@@ -273,7 +277,7 @@ public class CurrentPlayingFragment extends Fragment {
                     if (channel != null) {
 
                         int child = childPosition;
-                        if (!mShowTodayAll && mListType != 0
+                        if (!mShowTodayAll && mListType != AtMoviesTVHttpHelper.TYPE_NOW_PLAYING
                                 && DateUtils.isToday(mPreviewDate.getTimeInMillis())) {
                             child += mChannelProgramStartIndex.get(groupPosition);
                         }// [1.0.0.7]dolphin++ if only show partial program
@@ -344,7 +348,7 @@ public class CurrentPlayingFragment extends Fragment {
                             // Log.d(TAG, String.format("%d %d", groupPosition,child));
 
                             ProgramItem program = channel.Programs.get(child);
-                            startAddingCalendar(getActivity(), channel, program);
+                            Utils.startAddingCalendar(getActivity(), channel, program);
                         }
 
                         // Return true as we are handling the event.
@@ -356,34 +360,13 @@ public class CurrentPlayingFragment extends Fragment {
                 }
             };
 
-    //Android Essentials: Adding Events to the User’s Calendar
-    //http://goo.gl/jyT75l
-    public static void startAddingCalendar(Context context,
-                                           ChannelItem channel, ProgramItem program) {
-        Intent calIntent = new Intent(Intent.ACTION_INSERT);
-        calIntent.setData(CalendarContract.Events.CONTENT_URI);
 
-        calIntent.setType("vnd.android.cursor.item/event");
-        calIntent.putExtra(CalendarContract.Events.TITLE, String.format("%s - %s",
-                channel.Name, program.Name));
-        //calIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, null);
-        calIntent.putExtra(CalendarContract.Events.DESCRIPTION, program.ClipLength);
-
-        calIntent.putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, false);
-        calIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,
-                program.Date.getTimeInMillis());
-        calIntent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME,
-                program.Date.getTimeInMillis());
-
-        calIntent.putExtra(CalendarContract.Events.ACCESS_LEVEL,
-                CalendarContract.Events.ACCESS_PRIVATE);
-        calIntent.putExtra(CalendarContract.Events.AVAILABILITY,
-                CalendarContract.Events.AVAILABILITY_FREE);
-
-        context.startActivity(calIntent);
-    }
 
     public void setDrawerLayout(DrawerLayout drawer) {
         mDrawerLayout = drawer;
+    }
+
+    public boolean isLoading() {
+        return mIsLoading;
     }
 }

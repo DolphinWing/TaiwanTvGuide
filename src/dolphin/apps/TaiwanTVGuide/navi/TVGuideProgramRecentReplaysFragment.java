@@ -27,6 +27,7 @@ import dolphin.apps.TaiwanTVGuide.TVGuideWebView;
 import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 import dolphin.apps.TaiwanTVGuide.provider.ChannelItem;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
+import dolphin.apps.TaiwanTVGuide.provider.Utils;
 
 public class TVGuideProgramRecentReplaysFragment extends TVGuideFragment {
     private final static String TAG = "TVGuideProgramRecentReplaysFragment";
@@ -106,7 +107,7 @@ public class TVGuideProgramRecentReplaysFragment extends TVGuideFragment {
                 public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                     ProgramItem program = progItem;
                     program.Date = progItem.Replays.get(i);
-                    CurrentPlayingFragment.startAddingCalendar(getActivity(),
+                    Utils.startAddingCalendar(getActivity(),
                             new ChannelItem(null, progItem.Channel), progItem);
                     return true;
                 }

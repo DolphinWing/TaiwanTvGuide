@@ -26,6 +26,9 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
     public static final String KEY_PROGRAM_NAME = "PROGRAM_NAME";
     public static final String KEY_DATE = "DATE";
 
+    public final static int TYPE_NOW_PLAYING = 0;
+    public final static int TYPE_ALL_DAY = 1;
+
     private Context mContext;
 
     public AtMoviesTVHttpHelper(Context context) {
