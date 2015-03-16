@@ -8,6 +8,10 @@ https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 ● 支援IMDb app (if has)
 
 --
+[67] @ 2015-03-17
+    add empty view
+    adjust some layout parameters
+
 [66] @ 2015-03-15
     new theme and icon
 [65] @ 2015-03-15

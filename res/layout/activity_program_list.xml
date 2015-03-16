@@ -24,6 +24,35 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin" />
 
+        <LinearLayout
+            android:id="@android:id/empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@android:drawable/screen_background_dark_transparent">
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Title"
+                android:text="@string/no_network"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="32dp" />
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Title"
+                android:id="@+id/action_retry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:background="@drawable/selectable_background_holo_orange"
+                android:text="@string/retry" />
+
+        </LinearLayout>
+
         <include layout="@layout/fullscreen_loading_indicator" />
     </RelativeLayout>
 

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.tonicartos.superslim.LayoutManager;
 
 import java.util.ArrayList;
+
 import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.provider.ChannelItem;
 
@@ -68,23 +69,27 @@ public class ProgramListFragment extends Fragment implements OnHttpListener {
 
     @Override
     public void onHttpStart() {
-
+        //mEmptyView.setVisibility(View.GONE);
     }
 
     @Override
     public void onHttpUpdated(Object data) {
+        //mRecyclerView.setVisibility(View.VISIBLE);
         if (data != null) {
             ArrayList<ChannelItem> channelItems = (ArrayList<ChannelItem>) data;
             mAdapter = new ProgramListAdapter(getActivity(), channelItems);
             //mAdapter.setHeaderDisplay(LayoutManager.LayoutParams.HEADER_STICKY);
             mRecyclerView.setAdapter(mAdapter);
+            //mEmptyView.setVisibility(mAdapter != null && mAdapter.getItemCount() > 0
+            //        ? View.VISIBLE : View.GONE);
         } else {
-            //TODO: show no data
+            //mEmptyView.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
     public void onHttpTimeout() {
-
+        //mRecyclerView.setVisibility(View.INVISIBLE);
+        //mEmptyView.setVisibility(View.VISIBLE);
     }
 }

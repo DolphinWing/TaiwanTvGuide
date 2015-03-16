@@ -22,6 +22,8 @@ public class ProgramInfoActivity extends ActionBarActivity implements OnHttpProv
     private View mLoadingPane;
 
     private AtMoviesTVHttpHelper mHelper;
+    private String mUrl, mName, mGroup;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +55,10 @@ public class ProgramInfoActivity extends ActionBarActivity implements OnHttpProv
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
-                        String url = bundle.getString(AtMoviesTVHttpHelper.KEY_TVDATA);
-                        String name = bundle.getString(AtMoviesTVHttpHelper.KEY_PROGRAM_NAME);
-                        String group = bundle.getString(AtMoviesTVHttpHelper.KEY_GROUP);
-                        download(url, name, group);
+                        mUrl = bundle.getString(AtMoviesTVHttpHelper.KEY_TVDATA);
+                        mName = bundle.getString(AtMoviesTVHttpHelper.KEY_PROGRAM_NAME);
+                        mGroup = bundle.getString(AtMoviesTVHttpHelper.KEY_GROUP);
+                        download(mUrl, mName, mGroup);
                     }
                 });
             }
@@ -123,5 +125,10 @@ public class ProgramInfoActivity extends ActionBarActivity implements OnHttpProv
     @Override
     public void unregisterOnHttpListener(OnHttpListener listener) {
         mOnHttpListener.remove(listener);
+    }
+
+    @Override
+    public void refresh() {
+        download(mUrl, mName, mGroup);
     }
 }

@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -45,6 +44,7 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
     private Switch mSwitch;
     private View mLeftPane;
     private View mLoadingPane;
+    private View mEmptyView;
 
     private String[] mChannelGroups;
     private int mGroupIndex = 0;
@@ -112,6 +112,17 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
             }
         });
         //mLoadingPane.setVisibility(View.GONE);
+        mEmptyView = findViewById(android.R.id.empty);
+        View retryView = findViewById(R.id.action_retry);
+        if (retryView != null) {
+            retryView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    selectItem(mGroupIndex);
+                }
+            });
+        }
+        mEmptyView.setVisibility(View.GONE);
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -251,6 +262,11 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
         mOnHttpListener.remove(listener);
     }
 
+    @Override
+    public void refresh() {
+        selectItem(mGroupIndex);
+    }
+
     private void setLoading(boolean loading) {
         setSupportProgressBarIndeterminateVisibility(loading);
         if (mLoadingPane != null) {
@@ -260,14 +276,18 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
 
     @Override
     public void onHttpStart() {
-        Log.d(TAG, "onHttpStart");
+        //Log.d(TAG, "onHttpStart");
         setLoading(true);
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        mEmptyView.setVisibility(View.GONE);
     }
 
     @Override
     public void onHttpUpdated(Object data) {
-        Log.d(TAG, "onHttpUpdated " + data);
+        if (data == null || ((ArrayList) data).size() == 0) {
+            mEmptyView.setVisibility(View.VISIBLE);
+        }
+        //Log.d(TAG, "onHttpUpdated " + data);
         String group = mChannelGroups[mGroupIndex];
         String title = mSwitch.isChecked()
                 ? String.format("%s  %02d/%02d", group.substring(0, 2),
@@ -280,7 +300,8 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
 
     @Override
     public void onHttpTimeout() {
-        Log.d(TAG, "onHttpTimeout");
+        //Log.d(TAG, "onHttpTimeout");
+        mEmptyView.setVisibility(View.VISIBLE);
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         setLoading(false);
     }

@@ -10,7 +10,7 @@
     tools:context="dolphin.apps.TaiwanTVGuide.v7.ProgramInfoActivity$PlaceholderFragment">
 
     <TextView
-        style="@style/TextAppearance.AppCompat.Title"
+        style="@style/TextAppearance.AppCompat.Headline"
         android:id="@android:id/title"
         android:text="@string/app_name"
         android:layout_width="match_parent"
@@ -21,6 +21,7 @@
 
     <TextView
         android:id="@android:id/text1"
+        style="@style/TextAppearance.AppCompat.Title"
         android:text="@string/app_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,6 +47,7 @@
 
             <TextView
                 android:id="@android:id/message"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
                 android:text="@string/loading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

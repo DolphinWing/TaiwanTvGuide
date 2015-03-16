@@ -61,8 +61,8 @@ public class ProgramListAdapter extends RecyclerView.Adapter<ProgramViewHolder>
         for (ChannelItem item : items) {
             sectionManager = (sectionManager + 1) % 2;
             sectionFirstPosition = headerCount + itemCount;
-            headerCount++;
             mItems.add(new MyItem(true, item, null, sectionFirstPosition, sectionManager));
+            headerCount++;
             for (ProgramItem p : item.Programs) {
                 itemCount++;
                 mItems.add(new MyItem(false, item, p, sectionFirstPosition, sectionManager));
@@ -71,7 +71,7 @@ public class ProgramListAdapter extends RecyclerView.Adapter<ProgramViewHolder>
     }
 
     @Override
-    public int getItemViewType(int position) {
+        public int getItemViewType(int position) {
         return mItems.get(position).isHeader ? VIEW_TYPE_HEADER : VIEW_TYPE_CONTENT;
     }
 
