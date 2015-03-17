@@ -54,8 +54,12 @@
         <activity
             android:name=".v7.ProgramInfoActivity"
             android:label="@string/title_activity_program_info"
-            android:theme="@style/Theme.V7_Program_Full"/>
-
+            android:theme="@style/Theme.V7_Program_Full" />
+        <activity
+            android:name=".v7.SettingsActivity"
+            android:label="@string/preference"
+            android:theme="@style/Theme.V7_Program.Settings">
+        </activity>
     </application>
 
 </manifest>

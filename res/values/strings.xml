@@ -31,5 +31,6 @@
     <string name="guide_intro">節目介紹</string>
     <string name="title_activity_program_list">ProgramListActivity</string>
     <string name="title_activity_program_info">ProgramInfoActivity</string>
+    <string name="pref_header_general">一般</string>
 
 </resources>

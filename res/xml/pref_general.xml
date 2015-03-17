@@ -1,0 +1,15 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:key="dTVGuide_VersionInfo"
+        android:title="@string/build_information" />
+
+    <ListPreference
+        android:defaultValue="5"
+        android:dialogTitle="@string/select_group"
+        android:key="dTVGuide_DefaultGroup"
+        android:entryValues="@array/channel_group_index"
+        android:entries="@array/channel_group"
+        android:title="@string/pref_default_group_summary" />
+
+</PreferenceScreen>

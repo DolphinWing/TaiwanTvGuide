@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="Theme.V7_Program" parent="Theme.AppCompat">
         <item name="windowActionBar">false</item>
         <!-- Remove system title bars; we will add the action bar ourselves. -->
@@ -22,5 +23,10 @@
 
         <item name="colorPrimary">@android:color/holo_orange_dark</item>
         <item name="toolbarStyle">@style/Theme.V7_Program.Toolbar</item>
+    </style>
+
+    <style name="Theme.V7_Program.Settings" parent="Theme.AppCompat">
+        <item name="windowActionBar">true</item>
+        <item name="colorPrimary">@android:color/holo_orange_dark</item>
     </style>
 </resources>

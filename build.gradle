@@ -16,9 +16,9 @@ allprojects {
 apply plugin: 'com.android.application'
 
 dependencies {
+    //compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     compile 'com.android.support:support-v4:22.0.0'
     compile 'com.android.support:recyclerview-v7:22.0.0'
-    //compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     compile 'com.tonicartos:superslim:0.4.5'
     compile 'com.android.support:appcompat-v7:22.0.0'
 }
@@ -30,8 +30,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 66
-        versionName "1.6.1"
+        versionCode 68
+        versionName "1.6.3"
     }
     sourceSets {
         main {

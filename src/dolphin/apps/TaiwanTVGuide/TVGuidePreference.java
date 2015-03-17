@@ -102,7 +102,7 @@ public class TVGuidePreference extends PreferenceActivity {
      * @param cls
      * @return
      */
-    private static String getVersionName(Context context, Class<?> cls) {
+    public static String getVersionName(Context context, Class<?> cls) {
         try {
             PackageInfo info = getPackageInfo(context, cls);
             //return String.format("%s.%d", info.versionName, info.versionCode);
@@ -120,7 +120,7 @@ public class TVGuidePreference extends PreferenceActivity {
      * @param cls
      * @return
      */
-    private static PackageInfo getPackageInfo(Context context, Class<?> cls) {
+    public static PackageInfo getPackageInfo(Context context, Class<?> cls) {
         try {
             return context.getPackageManager().getPackageInfo(
                     new ComponentName(context, cls).getPackageName(), 0);

@@ -197,7 +197,7 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
             case R.id.preference: {
                 Intent intent2 = new Intent();
                 //intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent2.setClass(ProgramListActivity.this, TVGuidePreference.class);
+                intent2.setClass(ProgramListActivity.this, SettingsActivity.class);
                 startActivityForResult(intent2, 0);
             }
             return true;
