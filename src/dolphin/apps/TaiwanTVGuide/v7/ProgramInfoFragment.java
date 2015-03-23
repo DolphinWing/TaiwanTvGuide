@@ -3,6 +3,8 @@ package dolphin.apps.TaiwanTVGuide.v7;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -30,9 +32,11 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
     private TextView mEngTitle;
     private TextView mDescription;
     private View mReplays;
+    private View mGoToUrl;
 
     private OnHttpProvider mProvider;
     private String mProgramName;
+    private String mUrl;
 
     @Override
     public void onAttach(Activity activity) {
@@ -60,6 +64,7 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
             Bundle bundle = getActivity().getIntent().getExtras();
             if (bundle != null) {
                 mProgramName = bundle.getString(AtMoviesTVHttpHelper.KEY_PROGRAM_NAME);
+                mUrl = bundle.getString(AtMoviesTVHttpHelper.KEY_TVDATA);
             }
         }
     }
@@ -73,7 +78,8 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
         mEngTitle = (TextView) rootView.findViewById(android.R.id.text1);
         mEngTitle.setText("");
         mDescription = (TextView) rootView.findViewById(android.R.id.message);
-        mReplays = rootView.findViewById(android.R.id.text2);
+        mGoToUrl = rootView.findViewById(android.R.id.button1);
+        mReplays = rootView.findViewById(android.R.id.button2);
         return rootView;
     }
 
@@ -117,6 +123,20 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
                 });
             } else {
                 mReplays.setVisibility(View.GONE);
+            }
+
+            if (mUrl != null && !mUrl.isEmpty()) {
+                mGoToUrl.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(AtMoviesTVHttpHelper.ATMOVIES_TV_URL + "/" +mUrl));
+                        startActivity(intent);
+                    }
+                });
+                mGoToUrl.setVisibility(View.GONE);//[69]++ hide this since we can't open the url
+            } else {
+                mGoToUrl.setVisibility(View.GONE);
             }
         } else {
             //TODO: show no data

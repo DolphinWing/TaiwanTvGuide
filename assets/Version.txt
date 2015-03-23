@@ -2,12 +2,22 @@
 https://play.google.com/store/apps/details?id=dolphin.apps.TaiwanTVGuide
 https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 
-支援功能(最新: 1.6.1)
+支援功能(最新: 1.6.5)
 ● 從開眼電影網下載本日節目表
 ● 現正播放以及下一部即將播放的電影
 ● 支援IMDb app (if has)
 
 --
+[70] @ 2015-03-23
+    add onBackPressed override to close drawer
+    hide open url view by default
+[69] @ 2015-03-22
+    change color
+    add open url view
+
+[68] @ 2015-03-18
+    add new Settings
+
 [67] @ 2015-03-17
     add empty view
     adjust some layout parameters

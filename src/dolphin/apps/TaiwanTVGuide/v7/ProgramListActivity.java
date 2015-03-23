@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Locale;
 
 import dolphin.apps.TaiwanTVGuide.R;
-import dolphin.apps.TaiwanTVGuide.TVGuidePreference;
 import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 import dolphin.apps.TaiwanTVGuide.provider.ChannelItem;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
@@ -76,6 +75,8 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.app_name);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_action_list);
 
         mChannelGroups = getResources().getStringArray(R.array.channel_group);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -178,6 +179,7 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
         int id = item.getItemId();
 
         switch (id) {
+            case android.R.id.home:
             case R.id.action_search_menu://[62]++
                 mDrawerLayout.openDrawer(mLeftPane);
                 return true;
@@ -332,6 +334,15 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
 
                 context.startActivity(intent);
             }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(mLeftPane)) {
+            mDrawerLayout.closeDrawer(mLeftPane);
+        } else {
+            super.onBackPressed();
         }
     }
 }
