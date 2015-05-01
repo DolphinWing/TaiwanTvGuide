@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -76,7 +77,7 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
         getSupportActionBar().setTitle(R.string.app_name);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_action_list);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_nav_prev);
 
         mChannelGroups = getResources().getStringArray(R.array.channel_group);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -95,6 +96,10 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
             }
         });
         mSwitch = (Switch) findViewById(R.id.switch1);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            //mSwitch.setShowText(true);
+            mSwitch.setText(R.string.all_show);
+        }
         mSwitch.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton button, boolean checked) {
@@ -102,6 +107,9 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
                 mListType = checked ? AtMoviesTVHttpHelper.TYPE_ALL_DAY :
                         AtMoviesTVHttpHelper.TYPE_NOW_PLAYING;
                 selectItem(mGroupIndex);
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    mSwitch.setText(checked ? mSwitch.getTextOn() : mSwitch.getTextOff());
+//                }
             }
         });
         mLeftPane = findViewById(R.id.left_drawer);

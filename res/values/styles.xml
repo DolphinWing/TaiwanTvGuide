@@ -5,6 +5,7 @@
         <item name="windowActionBar">false</item>
         <!-- Remove system title bars; we will add the action bar ourselves. -->
         <item name="android:windowNoTitle">true</item>
+        <item name="windowNoTitle">true</item>
 
         <item name="colorPrimary">@android:color/holo_orange_dark</item>
         <item name="toolbarStyle">@style/Theme.V7_Program.Toolbar</item>

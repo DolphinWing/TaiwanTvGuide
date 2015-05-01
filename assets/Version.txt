@@ -8,6 +8,10 @@ https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 ● 支援IMDb app (if has)
 
 --
+[71] @ 2015-05-01
+    fix lollipop Switch style changed
+    change home as up indicator icon
+
 [70] @ 2015-03-23
     add onBackPressed override to close drawer
     hide open url view by default
