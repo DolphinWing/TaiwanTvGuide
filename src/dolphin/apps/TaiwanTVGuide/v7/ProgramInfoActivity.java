@@ -94,7 +94,7 @@ public class ProgramInfoActivity extends ActionBarActivity implements OnHttpProv
     }
 
     private void setLoading(boolean loading) {
-        setSupportProgressBarIndeterminateVisibility(loading);
+        //setSupportProgressBarIndeterminateVisibility(loading);
         if (mLoadingPane != null) {
             mLoadingPane.setVisibility(loading ? View.VISIBLE : View.GONE);
         }

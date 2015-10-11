@@ -1,19 +1,27 @@
 package dolphin.apps.TaiwanTVGuide.provider;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
+import android.text.Html;
 import android.util.Log;
 
-import com.quanta.pobu.net.QHttpHelper;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import dolphin.apps.TaiwanTVGuide.R;
 
-public class AtMoviesTVHttpHelper extends QHttpHelper {
+public class AtMoviesTVHttpHelper {
     private static final String TAG = "AtMoviesTVHttpHelper";
 
     public static final String ATMOVIES_TV_URL = "http://tv.atmovies.com.tw/tv";
@@ -30,23 +38,74 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
     public final static int TYPE_ALL_DAY = 1;
 
     private Context mContext;
+    private OkHttpClient mClient;
 
     public AtMoviesTVHttpHelper(Context context) {
-        mContext = context;
+        _init(context);
     }
 
     public boolean _init(Context context) {
         mContext = context;
         // Log.d(TAG, String.format("_init %s",
         // mContext.getString(R.string.app_name)));
+        mClient = new OkHttpClient();
+        mClient.setConnectTimeout(3, TimeUnit.SECONDS);// connect timeout
+        mClient.setReadTimeout(60, TimeUnit.SECONDS);// socket timeout
+        return checkNetworkConnected(mContext);
+    }
 
-        return checkNeworkAvailable(mContext);
+    /**
+     * check if network is available
+     *
+     * @param context
+     * @return
+     */
+    public static boolean checkNetworkConnected(Context context) {
+        ConnectivityManager connMgr =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifi.isConnected()) {
+            //Toast.makeText(this, "Wifi" , Toast.LENGTH_LONG).show();
+            Log.v(TAG, "wifi.isAvailable()");
+            return true;
+        }
+
+        NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (mobile.isConnected()) {
+            //Toast.makeText(this, "Mobile 3G " , Toast.LENGTH_LONG).show();
+            Log.v(TAG, "mobile.isAvailable()");
+            return true;
+        }
+        //else {
+        //{Toast.makeText(this, "No Network " , Toast.LENGTH_LONG).show();}
+        Log.v(TAG, "No Network");
+        //}
+        return false;
+    }
+
+    private String getBody(String url) {
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("REFERER", url)
+                .build();
+
+        Response response;
+        try {
+            //Log.d(TAG, String.format("read timeout=%d", mClient.getReadTimeout()));
+            response = mClient.newCall(request).execute();
+            return response.body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, String.format("%s from %s", e.getMessage(), url));
+        }
+        return null;
     }
 
     public ArrayList<ChannelItem> get_group_guide_list(Calendar cal, String group_id) {
         String url = String.format("%s/%s", ATMOVIES_TV_URL,
                 mContext.getString(R.string.url_group_guide));
-        // Log.d(TAG, url);
+        Log.d(TAG, url);
         String date = String.format("%04d-%02d-%02d", cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
         // Log.d(TAG, date);
@@ -57,7 +116,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
 
         long startTime = System.currentTimeMillis();
         try {
-            String response = getUrlContent(url);// , ENCODE_BIG5);
+            String response = getBody(url);// , ENCODE_BIG5);
             if (response == null || response.isEmpty()) {
                 throw new Exception("no response");
             }
@@ -76,8 +135,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
             String srcHtml = response;
             int startIndex = response.indexOf("<table border=\"1");
             while (mTitle.find()) {
-                // Log.d(TAG, String.format("%s: %s", mTitle.group(1), mTitle
-                // .group(2)));
+                Log.d(TAG, String.format("%s: %s", mTitle.group(1), mTitle.group(2)));
                 ChannelItem channel = new ChannelItem(mTitle.group(1),
                         mTitle.group(2), group_id);
                 // get program
@@ -104,8 +162,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                     pat = "<td align=\"center\" class=at9>([^<]*)";
                     mProgram = Pattern.compile(pat).matcher(programHtml);
                     while (mProgram.find()) {
-                        // Log.d(TAG, String.format("=== %s",
-                        // mProgram.group(1)));
+                        Log.d(TAG, String.format("=== %s", mProgram.group(1)));
                         ProgramItem item = channel.Programs.get(i);
                         if (item != null) {
                             // item.Date = cal;
@@ -115,12 +172,11 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                             //        cal.get(Calendar.DAY_OF_MONTH));
                             item.Date.setTimeInMillis(cal.getTimeInMillis());
                             String time = mProgram.group(1);
-                            // Log.d(TAG, String.format("=== %s", time));
+                            Log.d(TAG, String.format("=== %s", time));
                             String[] ts = time.split(":");
                             int hour = Integer.parseInt(ts[0]);
                             int minute = Integer.parseInt(ts[1]);
-                            // Log.d(TAG, String.format("=== %d %02d:%02d", i,
-                            // hour, minute));
+                            // Log.d(TAG, String.format("=== %d %02d:%02d", i, hour, minute));
                             if (i == 0 && hour > 12) {
                                 //[59]-- item.Date.add(Calendar.HOUR_OF_DAY, -24);
                                 item.Date.add(Calendar.DAY_OF_YEAR, -1);//[59]++
@@ -156,8 +212,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
                         i++;
                     }
                 } catch (Exception e1) {
-                    Log.e(TAG, String.format(
-                            "get_group_guide_list url: %s, %s",
+                    Log.e(TAG, String.format("get_group_guide_list url: %s, %s",
                             this.getClass().getName(), e1.getMessage()));
                 }
 
@@ -180,7 +235,7 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
 
         ProgramItem progItem = null;
         try {
-            String response = getUrlContent(url);// , ENCODE_BIG5);
+            String response = getBody(url);// , ENCODE_BIG5);
             if (response == null || response.isEmpty()) {
                 throw new Exception("no response");
             }
@@ -227,9 +282,13 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
             try {
                 String descHtml = programHtml.substring(programHtml.indexOf("<font class=at11"));
                 descHtml = descHtml.substring(0, descHtml.indexOf("<img"));
-                descHtml = descHtml.replace("<BR><BR><P>", "\n");
-                // descHtml = descHtml.replace("<[^>]*>", "");
-                descHtml = QHttpHelper.removeHTML(descHtml);
+//                descHtml = descHtml.replace("<BR><BR><P>", "\n");
+//                // descHtml = descHtml.replace("<[^>]*>", "");
+//                //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//                //    descHtml = Html.escapeHtml(descHtml);
+//                //} else {
+//                descHtml = removeIso8859HTML(descHtml);
+//                //}
                 progItem.Description = descHtml;
             } catch (Exception eDesc) {
                 progItem.Description = null;
@@ -297,8 +356,8 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
 
         long startTime = System.currentTimeMillis();
         try {
-            String response = getUrlContent(url);// , ENCODE_BIG5);
-            if (response == null || response == "") {
+            String response = getBody(url);// , ENCODE_BIG5);
+            if (response == null || response.isEmpty()) {
                 throw new Exception("no response");
             }
             // Log.d(TAG, String.format("response %d, %s", response.length(),
@@ -398,5 +457,27 @@ public class AtMoviesTVHttpHelper extends QHttpHelper {
 
     public static Calendar getNowTime() {
         return Calendar.getInstance(Locale.TAIWAN);
+    }
+
+    /**
+     * remove some ISO-8859 encoded HTML
+     *
+     * @param content
+     * @return
+     */
+    public static String removeIso8859HTML(String content) {
+        String res_content = content;
+        // HTML ISO-8859-1 Reference
+        // http://www.w3schools.com/tags/ref_entities.asp
+        res_content = res_content.replace("&lt;", "<").replace("&#60;", "<");// less-than
+        res_content = res_content.replace("&gt;", ">").replace("&#62;", ">");// greater-than
+        res_content = res_content.replace("&quot;", "\"").replace("&#34;", "\"");// quotation
+        // mark
+        res_content = res_content.replace("&apos;", "'").replace("&#39;", "'");// apostrophe
+        res_content = res_content.replace("&amp;", "&").replace("&#38;", "&");// ampersand
+        res_content = res_content.replace("&nbsp;", " ").replace("&#160;", " ");// non-breaking
+        // space
+        res_content = res_content.replace("&deg;", "°").replace("&#176;", "°");// degree
+        return res_content;
     }
 }

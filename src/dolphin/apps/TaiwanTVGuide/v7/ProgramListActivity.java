@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -74,10 +75,13 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.app_name);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_nav_prev);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.app_name);
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_action_nav_prev);
+        }
 
         mChannelGroups = getResources().getStringArray(R.array.channel_group);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -245,6 +249,10 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
                         break;
                 }
 
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed()) {
+                    return;
+                }
+
                 final ArrayList<ChannelItem> items = channelItems;
                 ProgramListActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -278,7 +286,7 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
     }
 
     private void setLoading(boolean loading) {
-        setSupportProgressBarIndeterminateVisibility(loading);
+        //setSupportProgressBarIndeterminateVisibility(loading);
         if (mLoadingPane != null) {
             mLoadingPane.setVisibility(loading ? View.VISIBLE : View.GONE);
         }
@@ -303,7 +311,10 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
                 ? String.format("%s  %02d/%02d", group.substring(0, 2),
                 mPreviewDate.get(Calendar.MONTH) + 1, mPreviewDate.get(Calendar.DAY_OF_MONTH))
                 : String.format("%s  %s", group.substring(0, 2), mSwitch.getTextOff());
-        getSupportActionBar().setTitle(title);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(title);
+        }
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         setLoading(false);
     }
