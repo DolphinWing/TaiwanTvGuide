@@ -6,7 +6,7 @@ package dolphin.apps.TaiwanTVGuide.v7;
  * HTTP download status listener
  */
 public interface OnHttpListener {
-    public void onHttpStart();
-    public void onHttpUpdated(Object data);
-    public void onHttpTimeout();
+    void onHttpStart();
+    void onHttpUpdated(Object data);
+    void onHttpTimeout();
 }

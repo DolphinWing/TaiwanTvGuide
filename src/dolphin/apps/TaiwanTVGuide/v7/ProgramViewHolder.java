@@ -23,7 +23,7 @@ public class ProgramViewHolder extends RecyclerView.ViewHolder {
     }
 
     public interface OnItemClickListener {
-        public void onItemClick(View view);
+        void onItemClick(View view);
     }
 
     public void setOnItemClickListener(OnItemClickListener l) {

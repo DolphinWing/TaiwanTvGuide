@@ -1,13 +1,15 @@
 package dolphin.apps.TaiwanTVGuide.v7;
 
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,11 +42,11 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
     private String mUrl;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
-        if (activity instanceof OnHttpProvider) {
-            mProvider = (OnHttpProvider) activity;
+        if (context instanceof OnHttpProvider) {
+            mProvider = (OnHttpProvider) context;
             mProvider.registerOnHttpListener(this);
         }
     }
@@ -95,7 +97,7 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
             final ProgramItem programItem = (ProgramItem) data;
             mChtTitle.setText(mProgramName);
 
-            if (programItem.Name.length() > mProgramName.length()) {
+            if (programItem.Name != null && programItem.Name.length() > mProgramName.length()) {
                 final String title = programItem.Name.substring(mProgramName.length()).trim();
                 mEngTitle.setText(title);
                 mEngTitle.setOnClickListener(new View.OnClickListener() {
@@ -131,7 +133,17 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse(AtMoviesTVHttpHelper.ATMOVIES_TV_URL + "/" +mUrl));
+                        intent.setData(Uri.parse(AtMoviesTVHttpHelper.ATMOVIES_TV_URL + "/" + mUrl));
+
+                        //add Chrome Custom Tabs
+                        Bundle extras = new Bundle();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                            extras.putBinder(Utils.EXTRA_CUSTOM_TABS_SESSION, null);
+                        }
+                        extras.putInt(Utils.EXTRA_CUSTOM_TABS_TOOLBAR_COLOR,
+                                getResources().getColor(android.R.color.holo_orange_dark));
+                        intent.putExtras(extras);
+
                         startActivity(intent);
                     }
                 });
@@ -140,7 +152,7 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
                 mGoToUrl.setVisibility(View.GONE);
             }
         } else {
-            //TODO: show no data
+            Log.e(TAG, "no data");//TODO: show no data
         }
     }
 

@@ -1,6 +1,6 @@
 package dolphin.apps.TaiwanTVGuide.v7;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -23,16 +23,15 @@ import dolphin.apps.TaiwanTVGuide.provider.ChannelItem;
 public class ProgramListFragment extends Fragment implements OnHttpListener {
     private final static String TAG = "ProgramListFragment";
     private RecyclerView mRecyclerView;
-    private ProgramListAdapter mAdapter;
 
     private OnHttpProvider mProvider;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
-        if (activity instanceof OnHttpProvider) {
-            mProvider = (OnHttpProvider) activity;
+        if (context instanceof OnHttpProvider) {
+            mProvider = (OnHttpProvider) context;
             mProvider.registerOnHttpListener(this);
         }
     }
@@ -77,9 +76,9 @@ public class ProgramListFragment extends Fragment implements OnHttpListener {
         //mRecyclerView.setVisibility(View.VISIBLE);
         if (data != null) {
             ArrayList<ChannelItem> channelItems = (ArrayList<ChannelItem>) data;
-            mAdapter = new ProgramListAdapter(getActivity(), channelItems);
+            ProgramListAdapter adapter = new ProgramListAdapter(getActivity(), channelItems);
             //mAdapter.setHeaderDisplay(LayoutManager.LayoutParams.HEADER_STICKY);
-            mRecyclerView.setAdapter(mAdapter);
+            mRecyclerView.setAdapter(adapter);
             //mEmptyView.setVisibility(mAdapter != null && mAdapter.getItemCount() > 0
             //        ? View.VISIBLE : View.GONE);
         } else {

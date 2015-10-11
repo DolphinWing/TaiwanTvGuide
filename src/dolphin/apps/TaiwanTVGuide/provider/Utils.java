@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
 import android.widget.Toast;
@@ -18,6 +20,11 @@ import java.util.List;
  * common utilities
  */
 public class Utils {
+    //https://developer.chrome.com/multidevice/android/customtabs
+    //https://github.com/GoogleChrome/custom-tabs-client
+    public static final String EXTRA_CUSTOM_TABS_SESSION = "android.support.customtabs.extra.SESSION";
+    public static final String EXTRA_CUSTOM_TABS_TOOLBAR_COLOR = "android.support.customtabs.extra.TOOLBAR_COLOR";
+
     //Android Essentials: Adding Events to the User’s Calendar
     //http://goo.gl/jyT75l
     public static void startAddingCalendar(Context context, ChannelItem channel, ProgramItem program) {
@@ -64,9 +71,16 @@ public class Utils {
     public static void startImdbActivity(Context context, String title) {
         Intent i = new Intent();
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        //TODO check if IMDB apk is supported
+        //check if IMDB apk is supported
         i.setData(Uri.parse(String.format("imdb:///find?q=%s", title.replace(" ", "%20"))));
         if (isCallable(context, i)) {//[38]++ 2013-05-31
+            Bundle extras = new Bundle();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                extras.putBinder(Utils.EXTRA_CUSTOM_TABS_SESSION, null);
+            }
+            extras.putInt(Utils.EXTRA_CUSTOM_TABS_TOOLBAR_COLOR,
+                    context.getResources().getColor(android.R.color.holo_orange_dark));
+            i.putExtras(extras);
             context.startActivity(i);
         } else {
             Toast.makeText(context, "not support IMDB", Toast.LENGTH_SHORT).show();
