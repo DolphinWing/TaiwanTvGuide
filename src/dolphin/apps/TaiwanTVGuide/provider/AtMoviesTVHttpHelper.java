@@ -106,7 +106,7 @@ public class AtMoviesTVHttpHelper {
         String url = String.format("%s/%s", ATMOVIES_TV_URL,
                 mContext.getString(R.string.url_group_guide));
         Log.d(TAG, url);
-        String date = String.format("%04d-%02d-%02d", cal.get(Calendar.YEAR),
+        String date = String.format(Locale.US, "%04d-%02d-%02d", cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
         // Log.d(TAG, date);
         url = url.replace("@date", date).replace("@group", group_id);
@@ -122,7 +122,7 @@ public class AtMoviesTVHttpHelper {
             }
             // Log.d(TAG, String.format("response %d, %s", response.length(),
             // response.substring(46, 246)));
-            list = new ArrayList<ChannelItem>();
+            list = new ArrayList<>();
 
 			/*
              * <a name="CH56"></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
@@ -162,7 +162,7 @@ public class AtMoviesTVHttpHelper {
                     pat = "<td align=\"center\" class=at9>([^<]*)";
                     mProgram = Pattern.compile(pat).matcher(programHtml);
                     while (mProgram.find()) {
-                        Log.d(TAG, String.format("=== %s", mProgram.group(1)));
+                        //Log.d(TAG, String.format("=== %s", mProgram.group(1)));
                         ProgramItem item = channel.Programs.get(i);
                         if (item != null) {
                             // item.Date = cal;
@@ -172,7 +172,7 @@ public class AtMoviesTVHttpHelper {
                             //        cal.get(Calendar.DAY_OF_MONTH));
                             item.Date.setTimeInMillis(cal.getTimeInMillis());
                             String time = mProgram.group(1);
-                            Log.d(TAG, String.format("=== %s", time));
+                            //Log.d(TAG, String.format("=== %s", time));
                             String[] ts = time.split(":");
                             int hour = Integer.parseInt(ts[0]);
                             int minute = Integer.parseInt(ts[1]);
@@ -280,8 +280,11 @@ public class AtMoviesTVHttpHelper {
 			 */
 
             try {
-                String descHtml = programHtml.substring(programHtml.indexOf("<font class=at11"));
-                descHtml = descHtml.substring(0, descHtml.indexOf("<img"));
+                String descHtml = programHtml;
+                descHtml = descHtml.contains("<font class=at11")
+                        ? descHtml.substring(descHtml.indexOf("<font class=at11") + 17) : descHtml;
+                descHtml = descHtml.contains("<img")
+                        ? descHtml.substring(0, descHtml.indexOf("<img")) : descHtml;
 //                descHtml = descHtml.replace("<BR><BR><P>", "\n");
 //                // descHtml = descHtml.replace("<[^>]*>", "");
 //                //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -289,6 +292,12 @@ public class AtMoviesTVHttpHelper {
 //                //} else {
 //                descHtml = removeIso8859HTML(descHtml);
 //                //}
+                //descHtml = Pattern.compile("[ ]+").matcher(descHtml).replaceAll(" ");
+                descHtml = descHtml.replace("\n", "").replace("\r", "").replace("\t", "");
+                //while (descHtml.startsWith(" ")) {
+                //    descHtml = descHtml.substring(1);
+                //}
+                //Log.d(TAG, "descHtml = " + descHtml.substring(0, 200));
                 progItem.Description = descHtml;
             } catch (Exception eDesc) {
                 progItem.Description = null;
@@ -362,7 +371,7 @@ public class AtMoviesTVHttpHelper {
             }
             // Log.d(TAG, String.format("response %d, %s", response.length(),
             // response.substring(46, 246)));
-            list = new ArrayList<ChannelItem>();
+            list = new ArrayList<>();
 
 			/*
              * <tr bgcolor=#ffffff> <td nowrap class=at11 align=right
@@ -462,9 +471,10 @@ public class AtMoviesTVHttpHelper {
     /**
      * remove some ISO-8859 encoded HTML
      *
-     * @param content
-     * @return
+     * @param content HTML content
+     * @return ISO-8859 encoded content has been removed
      */
+    @Deprecated
     public static String removeIso8859HTML(String content) {
         String res_content = content;
         // HTML ISO-8859-1 Reference

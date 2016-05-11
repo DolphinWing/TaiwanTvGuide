@@ -1,9 +1,9 @@
 package dolphin.apps.TaiwanTVGuide.v7;
 
+import android.app.assist.AssistContent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,8 +11,9 @@ import android.os.StrictMode;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -20,15 +21,24 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.Toast;
+
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import dolphin.apps.TaiwanTVGuide.MyApplication;
 import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 import dolphin.apps.TaiwanTVGuide.provider.ChannelItem;
@@ -36,13 +46,13 @@ import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
 import dolphin.apps.TaiwanTVGuide.provider.Utils;
 
 
-public class ProgramListActivity extends ActionBarActivity implements OnHttpProvider, OnHttpListener {
+public class ProgramListActivity extends AppCompatActivity implements OnHttpProvider, OnHttpListener {
     private final static String TAG = "ProgramListActivity";
     private final static boolean AUTO_SELECT = true;
 
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
     private Switch mSwitch;
+    private CheckBox mCheckBox;
     private View mLeftPane;
     private View mLoadingPane;
     private View mEmptyView;
@@ -52,9 +62,12 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
     private String mGroupId;
     private Calendar mPreviewDate;
     private int mListType = AtMoviesTVHttpHelper.TYPE_NOW_PLAYING;
-    private String mUrl = AtMoviesTVHttpHelper.ATMOVIES_TV_URL;
+    private final static String URL_BASE = AtMoviesTVHttpHelper.ATMOVIES_TV_URL +
+            "/attv.cfm?action=todaytime&group_id=@group";
+    private String mUrl = URL_BASE;
 
     private AtMoviesTVHttpHelper mHelper;
+    private Tracker mTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +76,12 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                 .permitNetwork()
                 .build());
+
+        //[76]++
+        MyApplication application = (MyApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+        mTracker.setScreenName("Program List");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         //set default locale
         //http://stackoverflow.com/a/4239680
@@ -73,69 +92,112 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
         supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_program_list);
 
+        mChannelGroups = getResources().getStringArray(R.array.channel_group);
+        mLeftPane = findViewById(R.id.left_drawer);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (mDrawerLayout != null) {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+        }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.app_name);
-            actionBar.setHomeButtonEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(mDrawerLayout != null);
+            actionBar.setDisplayHomeAsUpEnabled(mDrawerLayout != null);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_action_nav_prev);
         }
 
-        mChannelGroups = getResources().getStringArray(R.array.channel_group);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
-        mDrawerList = (ListView) findViewById(R.id.category_list);
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.listview_category, android.R.id.text1, mChannelGroups));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-                selectItem(position);
-                mDrawerLayout.closeDrawer(mLeftPane);
-            }
-        });
-        mSwitch = (Switch) findViewById(R.id.switch1);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            //mSwitch.setShowText(true);
-            mSwitch.setText(R.string.all_show);
+        ListView drawerList = (ListView) findViewById(R.id.category_list);
+        if (drawerList != null) {
+            // Set the adapter for the list view
+            drawerList.setAdapter(new ArrayAdapter<>(this,
+                    R.layout.listview_category, android.R.id.text1, mChannelGroups));
+            // Set the list's click listener
+            drawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                    if (mDrawerLayout != null) {
+                        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                    }
+                    selectItem(position);
+                    if (mDrawerLayout != null && mLeftPane != null) {
+                        mDrawerLayout.closeDrawer(mLeftPane);
+                    }
+                }
+            });
         }
-        mSwitch.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton button, boolean checked) {
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-                mListType = checked ? AtMoviesTVHttpHelper.TYPE_ALL_DAY :
-                        AtMoviesTVHttpHelper.TYPE_NOW_PLAYING;
-                selectItem(mGroupIndex);
+
+        mSwitch = (Switch) findViewById(R.id.switch1);
+        if (mSwitch != null) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                //mSwitch.setShowText(true);
+//                mSwitch.setText(R.string.all_show);
+//            }
+            mSwitch.setText(R.string.now_playing);
+            mSwitch.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton button, boolean checked) {
+                    invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                    mListType = checked ? AtMoviesTVHttpHelper.TYPE_ALL_DAY :
+                            AtMoviesTVHttpHelper.TYPE_NOW_PLAYING;
+                    selectItem(mGroupIndex);
 //                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //                    mSwitch.setText(checked ? mSwitch.getTextOn() : mSwitch.getTextOff());
 //                }
-            }
-        });
-        mLeftPane = findViewById(R.id.left_drawer);
-        mLoadingPane = findViewById(R.id.fullscreen_loading_indicator);
-        mLoadingPane.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                return true;//do nothing
-            }
-        });
-        //mLoadingPane.setVisibility(View.GONE);
-        mEmptyView = findViewById(android.R.id.empty);
-        View retryView = findViewById(R.id.action_retry);
-        if (retryView != null) {
-            retryView.setOnClickListener(new View.OnClickListener() {
+                    mSwitch.setText(checked ? R.string.all_show : R.string.now_playing);
+
+                    if (mCheckBox != null) {
+                        mCheckBox.setVisibility(checked ? View.VISIBLE : View.GONE);
+                    }
+
+                    //[76]++
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("Action")
+                            .setAction("list mode")
+                            .setLabel(mSwitch.getText().toString())
+                            .build());
+                }
+            });
+        }
+
+        mCheckBox = (CheckBox) findViewById(R.id.checkbox1);
+        if (mCheckBox != null) {
+            mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
-                public void onClick(View view) {
+                public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                    ((MyApplication)getApplication()).setShowAllPrograms(checked);
                     selectItem(mGroupIndex);
                 }
             });
         }
-        mEmptyView.setVisibility(View.GONE);
+
+        mLoadingPane = findViewById(R.id.fullscreen_loading_indicator);
+        if (mLoadingPane != null) {
+            mLoadingPane.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return true;//do nothing
+                }
+            });
+            //mLoadingPane.setVisibility(View.GONE);
+        }
+
+        mEmptyView = findViewById(android.R.id.empty);
+        if (mEmptyView != null) {
+            View retryView = findViewById(R.id.action_retry);
+            if (retryView != null) {
+                retryView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        selectItem(mGroupIndex);
+                    }
+                });
+            }
+            mEmptyView.setVisibility(View.GONE);
+        }
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -147,14 +209,20 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
         mPreviewDate = AtMoviesTVHttpHelper.getNowTime();
 
         if (AUTO_SELECT) {
-            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            if (mDrawerLayout != null) {
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            }
             selectItem(Utils.getPreferenceGroupIndex(this));
-            mDrawerLayout.closeDrawer(mLeftPane);
+            if (mDrawerLayout != null && mLeftPane != null) {
+                mDrawerLayout.closeDrawer(mLeftPane);
+            }
         } else {
             new Handler().post(new Runnable() {
                 @Override
                 public void run() {
-                    mDrawerLayout.openDrawer(mLeftPane);
+                    if (mDrawerLayout != null && mLeftPane != null) {
+                        mDrawerLayout.openDrawer(mLeftPane);
+                    }
                 }
             });
         }
@@ -179,7 +247,12 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
         //boolean drawerOpen = mDrawerLayout.isDrawerOpen(mLeftPane);
-        menu.setGroupVisible(R.id.preview_option_group, /*!drawerOpen & */mSwitch.isChecked());
+        menu.setGroupVisible(R.id.preview_option_group,
+                /*!drawerOpen & */ mSwitch != null && mSwitch.isChecked());
+        MenuItem item = menu.findItem(R.id.action_search_menu);
+        if (item != null) {
+            item.setVisible(mDrawerLayout != null);
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -193,7 +266,9 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
         switch (id) {
             case android.R.id.home:
             case R.id.action_search_menu://[62]++
-                mDrawerLayout.openDrawer(mLeftPane);
+                if (mDrawerLayout != null && mLeftPane != null) {
+                    mDrawerLayout.openDrawer(mLeftPane);
+                }
                 return true;
             case R.id.program_option_refresh:
                 selectItem(mGroupIndex);
@@ -216,9 +291,10 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
             }
             return true;
             case R.id.action_browser: {
-                Intent intent3 = new Intent(Intent.ACTION_VIEW);
-                intent3.setData(Uri.parse(mUrl));
-                startActivityForResult(intent3, 0);
+                //Intent intent3 = new Intent(Intent.ACTION_VIEW);
+                //intent3.setData(Uri.parse(mUrl));
+                //startActivityForResult(intent3, 0);
+                Utils.startBrowserActivity(ProgramListActivity.this, mUrl);
             }
             return true;
         }
@@ -236,9 +312,13 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
             listener.onHttpStart();
         }
 
+        final String label = mSwitch != null && mSwitch.isChecked() ? getString(R.string.all_show)
+                : getString(R.string.now_playing);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
+                long start = System.currentTimeMillis();
                 ArrayList<ChannelItem> channelItems = null;
                 switch (mListType) {
                     case AtMoviesTVHttpHelper.TYPE_NOW_PLAYING:
@@ -254,9 +334,24 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
                 }
 
                 final ArrayList<ChannelItem> items = channelItems;
+                if (items != null) {
+                    Log.d(TAG, "list size = " + items.size());
+                }
+
+                final long cost = System.currentTimeMillis() - start;
+                HitBuilders.TimingBuilder builder = new HitBuilders.TimingBuilder()
+                        .setCategory("Network")
+                        .setVariable("Download")
+                        .setLabel(label)
+                        .setValue(cost);
+                mTracker.send(builder.build());//[76]++
+
                 ProgramListActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Toast.makeText(ProgramListActivity.this,
+                                String.format(Locale.US, "cost %d ms", cost),
+                                Toast.LENGTH_SHORT).show();
                         for (OnHttpListener listener : mOnHttpListener) {
                             listener.onHttpUpdated(items);
                         }
@@ -265,7 +360,7 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
             }
         }).start();
 
-        mUrl = mUrl.replace("@group", mChannelGroups[position].split(" ")[1]);
+        mUrl = URL_BASE.replace("@group", mChannelGroups[position].split(" ")[1]);
     }
 
     private List<OnHttpListener> mOnHttpListener = new ArrayList<>();
@@ -296,7 +391,9 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
     public void onHttpStart() {
         //Log.d(TAG, "onHttpStart");
         setLoading(true);
-        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        if (mDrawerLayout != null) {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
         mEmptyView.setVisibility(View.GONE);
     }
 
@@ -307,23 +404,29 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
         }
         //Log.d(TAG, "onHttpUpdated " + data);
         String group = mChannelGroups[mGroupIndex];
-        String title = mSwitch.isChecked()
-                ? String.format("%s  %02d/%02d", group.substring(0, 2),
+        String title = mSwitch != null && mSwitch.isChecked()
+                ? String.format(Locale.TAIWAN, "%s  %02d/%02d", group.substring(0, 2),
                 mPreviewDate.get(Calendar.MONTH) + 1, mPreviewDate.get(Calendar.DAY_OF_MONTH))
-                : String.format("%s  %s", group.substring(0, 2), mSwitch.getTextOff());
+                : String.format(Locale.TAIWAN, "%s  %s", group.substring(0, 2), mSwitch.getTextOff());
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(title);
         }
-        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        if (mDrawerLayout != null) {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        }
         setLoading(false);
     }
 
     @Override
     public void onHttpTimeout() {
         //Log.d(TAG, "onHttpTimeout");
-        mEmptyView.setVisibility(View.VISIBLE);
-        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        if (mEmptyView != null) {
+            mEmptyView.setVisibility(View.VISIBLE);
+        }
+        if (mDrawerLayout != null) {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        }
         setLoading(false);
     }
 
@@ -335,7 +438,7 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
 
         intent.putExtra(
                 AtMoviesTVHttpHelper.KEY_DATE,
-                String.format("%04d-%02d-%02d",
+                String.format(Locale.TAIWAN, "%04d-%02d-%02d",
                         previewDate.get(Calendar.YEAR),
                         previewDate.get(Calendar.MONTH) + 1,
                         previewDate.get(Calendar.DAY_OF_MONTH))
@@ -358,10 +461,31 @@ public class ProgramListActivity extends ActionBarActivity implements OnHttpProv
 
     @Override
     public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(mLeftPane)) {
+        if (mDrawerLayout != null && mLeftPane != null && mDrawerLayout.isDrawerOpen(mLeftPane)) {
             mDrawerLayout.closeDrawer(mLeftPane);
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void onProvideAssistContent(AssistContent outContent) {
+        super.onProvideAssistContent(outContent);
+
+        //http://developer.android.com/intl/zh-tw/training/articles/assistant.html
+        String structuredJson = null;
+        try {
+            structuredJson = new JSONObject()
+                    //.put("@type", "MusicRecording")
+                    .put("@id", mUrl)
+                    .put("name", getString(R.string.atmovies_tv))
+                    .toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1 && structuredJson != null) {
+            outContent.setStructuredData(structuredJson);
+
         }
     }
 }

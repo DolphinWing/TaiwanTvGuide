@@ -2,6 +2,7 @@ package dolphin.apps.TaiwanTVGuide.v7;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,10 @@ import com.tonicartos.superslim.LinearSLM;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 import dolphin.apps.TaiwanTVGuide.R;
+import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 import dolphin.apps.TaiwanTVGuide.provider.ChannelItem;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
 
@@ -52,22 +55,40 @@ public class ProgramListAdapter extends RecyclerView.Adapter<ProgramViewHolder>
     }
 
     public ProgramListAdapter(Context context, ArrayList<ChannelItem> items) {
+        this(context, items, true);
+    }
+
+    public ProgramListAdapter(Context context, ArrayList<ChannelItem> items, boolean showAll) {
         mContext = context;
         mItems = new ArrayList<>();
 
+        Calendar now = AtMoviesTVHttpHelper.getNowTime();
         int sectionManager = -1;
         int headerCount = 0, itemCount = 0;
         int sectionFirstPosition = 0;
         for (ChannelItem item : items) {
+            //Log.d(TAG, "channel: " + item.ID);
             sectionManager = (sectionManager + 1) % 2;
             sectionFirstPosition = headerCount + itemCount;
             mItems.add(new MyItem(true, item, null, sectionFirstPosition, sectionManager));
             headerCount++;
+
+            int next = 0;//hide previous shows
             for (ProgramItem p : item.Programs) {
+                //Log.d(TAG, new SimpleDateFormat("MM/dd HH:mm", Locale.TAIWAN).format(p.Date.getTime()));
+                if (p.Date.after(now)) {
+                    break;
+                }
+                next++;
+            }
+            next = (!showAll && next > 0) ? next : 1;
+            for (int i = next - 1; i < item.Programs.size(); i++) {
+                ProgramItem p = item.Programs.get(i);
                 itemCount++;
                 mItems.add(new MyItem(false, item, p, sectionFirstPosition, sectionManager));
             }
         }
+        //Log.d(TAG, "items: " + mItems.size());
     }
 
     @Override
@@ -93,7 +114,7 @@ public class ProgramListAdapter extends RecyclerView.Adapter<ProgramViewHolder>
     }
 
     private String getProgramText(ProgramItem item) {
-        return String.format("%02d:%02d  %s",
+        return String.format(Locale.TAIWAN, "%02d:%02d  %s",
                 item.Date.get(Calendar.HOUR_OF_DAY),
                 item.Date.get(Calendar.MINUTE), item.Name);
     }

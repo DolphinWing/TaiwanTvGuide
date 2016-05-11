@@ -39,7 +39,7 @@ public class ProgramItem
 		Date = cal;//Date.setTime(cal.getTime());
 		Description = desc;
 
-		Replays = new ArrayList<Calendar>();
+		Replays = new ArrayList<>();
 		//[0.5.0.19] @ 2011-06-01 change the Replays from <String> to <Calendar>
 
 		Channel = null;

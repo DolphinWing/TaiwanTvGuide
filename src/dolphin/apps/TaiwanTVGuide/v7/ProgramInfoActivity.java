@@ -3,27 +3,34 @@ package dolphin.apps.TaiwanTVGuide.v7;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import dolphin.apps.TaiwanTVGuide.MyApplication;
 import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
 
-public class ProgramInfoActivity extends ActionBarActivity implements OnHttpProvider, OnHttpListener {
+public class ProgramInfoActivity extends AppCompatActivity implements OnHttpProvider, OnHttpListener {
     private final static String TAG = "ProgramInfoActivity";
 
     private View mLoadingPane;
 
     private AtMoviesTVHttpHelper mHelper;
-    private String mUrl, mName, mGroup;
+    private String mUrl, mName, mGroup, mChannelId;
 
+    private Tracker mTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +45,14 @@ public class ProgramInfoActivity extends ActionBarActivity implements OnHttpProv
         }
 
         mLoadingPane = findViewById(R.id.fullscreen_loading_indicator);
-        mLoadingPane.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                return true;//do nothing
-            }
-        });
+        if (mLoadingPane != null) {
+            mLoadingPane.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return true;//do nothing
+                }
+            });
+        }
 
         mHelper = new AtMoviesTVHttpHelper(this);
 
@@ -58,11 +67,27 @@ public class ProgramInfoActivity extends ActionBarActivity implements OnHttpProv
                         mUrl = bundle.getString(AtMoviesTVHttpHelper.KEY_TVDATA);
                         mName = bundle.getString(AtMoviesTVHttpHelper.KEY_PROGRAM_NAME);
                         mGroup = bundle.getString(AtMoviesTVHttpHelper.KEY_GROUP);
-                        download(mUrl, mName, mGroup);
+                        mChannelId = bundle.getString(AtMoviesTVHttpHelper.KEY_CHANNEL_ID);
+                        download(mUrl, mName, mGroup, mChannelId);
+
+                        if (mTracker != null) {
+                            HitBuilders.ScreenViewBuilder builder = new HitBuilders.ScreenViewBuilder()
+                                    .setCustomDimension(1, mGroup)
+                                    .setCustomDimension(2, mChannelId);
+                            mTracker.send(builder.build());
+                            Log.d(TAG, "send custom dimension with screen view");
+                            Log.d(TAG, "  group: " + mGroup);
+                            Log.d(TAG, "  channel: " + mChannelId);
+                        }
                     }
                 });
             }
         }
+
+        MyApplication application = (MyApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+        mTracker.setScreenName("Program Info");
+        //mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -71,7 +96,7 @@ public class ProgramInfoActivity extends ActionBarActivity implements OnHttpProv
         super.onDestroy();
     }
 
-    private void download(String url, String name, String group) {
+    private void download(String url, String name, String group, String channelId) {
         for (OnHttpListener listener : mOnHttpListener) {
             listener.onHttpStart();
         }
@@ -80,7 +105,16 @@ public class ProgramInfoActivity extends ActionBarActivity implements OnHttpProv
         new Thread(new Runnable() {
             @Override
             public void run() {
+                long start = System.currentTimeMillis();
                 final ProgramItem programItem = mHelper.get_program_guide(dataUrl);
+                long cost = System.currentTimeMillis() - start;
+                Log.d(TAG, String.format("download info cost %d ms", cost));
+                HitBuilders.TimingBuilder builder = new HitBuilders.TimingBuilder()
+                        .setCategory("Network")
+                        .setVariable("Download")
+                        .setLabel("detail")
+                        .setValue(cost);
+                mTracker.send(builder.build());//[76]++
                 ProgramInfoActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -129,6 +163,6 @@ public class ProgramInfoActivity extends ActionBarActivity implements OnHttpProv
 
     @Override
     public void refresh() {
-        download(mUrl, mName, mGroup);
+        download(mUrl, mName, mGroup, mChannelId);
     }
 }

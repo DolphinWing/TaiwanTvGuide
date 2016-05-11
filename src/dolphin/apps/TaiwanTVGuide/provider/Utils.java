@@ -1,5 +1,6 @@
 package dolphin.apps.TaiwanTVGuide.provider;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -68,22 +69,90 @@ public class Utils {
         return list.size() > 0;
     }
 
+    private static boolean isImdbApkInstalled(Context context) {
+        Intent intent = new Intent();
+        intent.setData(Uri.parse("imdb:///find?q=Tom%20Hanks"));
+        List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent, 0);
+        if (list != null && list.size() > 0) {
+            for (ResolveInfo resolveInfo : list) {
+                //Log.d("CpblCalendarHelper", resolveInfo.activityInfo.packageName);
+                if (resolveInfo.activityInfo.packageName.startsWith("com.imdb.mobile")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if Google Chrome is installed.
+     *
+     * @param context Context
+     * @return true if installed
+     */
+    public static boolean isGoogleChromeApkInstalled(Context context) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com"));
+        List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent, 0);
+        if (list != null && list.size() > 0) {
+            for (ResolveInfo resolveInfo : list) {
+                //Log.d("CpblCalendarHelper", resolveInfo.activityInfo.packageName);
+                if (resolveInfo.activityInfo.packageName.startsWith("com.android.chrome")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public static void startImdbActivity(Context context, String title) {
         Intent i = new Intent();
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //check if IMDB apk is supported
         i.setData(Uri.parse(String.format("imdb:///find?q=%s", title.replace(" ", "%20"))));
         if (isCallable(context, i)) {//[38]++ 2013-05-31
-            Bundle extras = new Bundle();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                extras.putBinder(Utils.EXTRA_CUSTOM_TABS_SESSION, null);
+            if (isImdbApkInstalled(context)) {
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            } else {
+                Bundle extras = new Bundle();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    extras.putBinder(Utils.EXTRA_CUSTOM_TABS_SESSION, null);
+                }
+                extras.putInt(Utils.EXTRA_CUSTOM_TABS_TOOLBAR_COLOR,
+                        context.getResources().getColor(android.R.color.holo_orange_dark));
+                i.putExtras(extras);
             }
-            extras.putInt(Utils.EXTRA_CUSTOM_TABS_TOOLBAR_COLOR,
-                    context.getResources().getColor(android.R.color.holo_orange_dark));
-            i.putExtras(extras);
+            if (!isGoogleChromeApkInstalled(context)) {
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
             context.startActivity(i);
         } else {
             Toast.makeText(context, "not support IMDB", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * start a browser activity
+     *
+     * @param context Context
+     * @param url     url
+     */
+    public static void startBrowserActivity(Context context, String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            //[169]dolphin++ add Chrome Custom Tabs
+            Bundle extras = new Bundle();
+            extras.putBinder(Utils.EXTRA_CUSTOM_TABS_SESSION, null);
+            extras.putInt(Utils.EXTRA_CUSTOM_TABS_TOOLBAR_COLOR,
+                    context.getResources().getColor(android.R.color.holo_orange_dark));
+            intent.putExtras(extras);
+        }
+        if (!isGoogleChromeApkInstalled(context)) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        try {//[97]dolphin++
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            //Toast.makeText(context, R.string.query_error, Toast.LENGTH_SHORT).show();
         }
     }
 

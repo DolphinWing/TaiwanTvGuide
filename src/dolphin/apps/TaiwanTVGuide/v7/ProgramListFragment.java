@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import com.tonicartos.superslim.LayoutManager;
 
 import java.util.ArrayList;
 
+import dolphin.apps.TaiwanTVGuide.MyApplication;
 import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.provider.ChannelItem;
 
@@ -49,7 +51,11 @@ public class ProgramListFragment extends Fragment implements OnHttpListener {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_program_list, container, false);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LayoutManager(getActivity()));
+        if (mRecyclerView != null) {
+            mRecyclerView.setLayoutManager(new LayoutManager(getActivity()));
+            mRecyclerView.setAdapter(new ProgramListAdapter(getActivity(),
+                    new ArrayList<ChannelItem>()));
+        }
         return rootView;
     }
 
@@ -69,20 +75,26 @@ public class ProgramListFragment extends Fragment implements OnHttpListener {
     @Override
     public void onHttpStart() {
         //mEmptyView.setVisibility(View.GONE);
+        Log.d(TAG, "onHttpStart");
     }
 
     @Override
     public void onHttpUpdated(Object data) {
+        //Log.d(TAG, "onHttpUpdated: " + data);
         //mRecyclerView.setVisibility(View.VISIBLE);
-        if (data != null) {
+        if (data != null && getActivity() != null) {
             ArrayList<ChannelItem> channelItems = (ArrayList<ChannelItem>) data;
-            ProgramListAdapter adapter = new ProgramListAdapter(getActivity(), channelItems);
+            ProgramListAdapter adapter = new ProgramListAdapter(getActivity(), channelItems,
+                    ((MyApplication)getActivity().getApplication()).isShowAllPrograms());
             //mAdapter.setHeaderDisplay(LayoutManager.LayoutParams.HEADER_STICKY);
-            mRecyclerView.setAdapter(adapter);
+            if (mRecyclerView != null) {
+                mRecyclerView.setAdapter(adapter);
+            }
             //mEmptyView.setVisibility(mAdapter != null && mAdapter.getItemCount() > 0
             //        ? View.VISIBLE : View.GONE);
         } else {
             //mEmptyView.setVisibility(View.VISIBLE);
+            Log.w(TAG, "no data!");
         }
     }
 
@@ -90,5 +102,6 @@ public class ProgramListFragment extends Fragment implements OnHttpListener {
     public void onHttpTimeout() {
         //mRecyclerView.setVisibility(View.INVISIBLE);
         //mEmptyView.setVisibility(View.VISIBLE);
+        Log.w(TAG, "timeout!");
     }
 }

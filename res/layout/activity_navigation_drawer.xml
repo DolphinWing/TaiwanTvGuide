@@ -19,12 +19,13 @@
         android:orientation="vertical">
 
         <Switch
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="56dp"
             android:id="@+id/switch1"
             android:textOff="@string/now_playing"
             android:textOn="@string/all_show"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:checked="false" />
 
         <View
             android:layout_width="match_parent"
