@@ -114,7 +114,6 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
             if (mEngTitle != null) {
                 if (programItem.Name != null && programItem.Name.length() > mProgramName.length()) {
                     final String title = programItem.Name.substring(mProgramName.length()).trim();
-
                     mEngTitle.setText(title);
                     mEngTitle.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -130,6 +129,7 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
 
             if (mDescription != null) {
                 if (programItem.Description != null && !programItem.Description.isEmpty()) {
+                    //Log.d(TAG, "desc: " + programItem.Description);
                     mDescription.setText(Html.fromHtml(programItem.Description));
                 } else {
                     mDescription.setText(R.string.no_data);
@@ -138,6 +138,7 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
 
             if (mReplays != null) {
                 if (programItem.Replays != null && programItem.Replays.size() > 0) {
+                    Log.v(TAG, "replay: " + programItem.Replays.size());
                     mReplays.setVisibility(View.VISIBLE);
                     mReplays.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -146,6 +147,7 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
                         }
                     });
                 } else {
+                    Log.w(TAG, "no replay");
                     mReplays.setVisibility(View.GONE);
                 }
             }

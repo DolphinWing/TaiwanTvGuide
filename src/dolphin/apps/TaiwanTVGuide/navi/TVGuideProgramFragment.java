@@ -17,6 +17,7 @@ import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
 
+@Deprecated
 public class TVGuideProgramFragment extends TVGuideFragment {
     private final static String TAG = "TVGuideProgramFragment";
 

@@ -7,6 +7,7 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 
+@Deprecated
 public class TVGuideWebView extends Activity
 {
 	private String myUrl = "";

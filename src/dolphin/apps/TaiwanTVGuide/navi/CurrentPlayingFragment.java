@@ -30,6 +30,7 @@ import dolphin.apps.TaiwanTVGuide.provider.GuideExpandableListAdapter;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
 import dolphin.apps.TaiwanTVGuide.provider.Utils;
 
+@Deprecated
 /**
  * Created by dolphin on 2014/2/22.
  */

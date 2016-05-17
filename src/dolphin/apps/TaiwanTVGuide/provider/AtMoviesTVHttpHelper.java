@@ -3,8 +3,6 @@ package dolphin.apps.TaiwanTVGuide.provider;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
-import android.text.Html;
 import android.util.Log;
 
 import com.squareup.okhttp.OkHttpClient;
@@ -57,31 +55,34 @@ public class AtMoviesTVHttpHelper {
     /**
      * check if network is available
      *
-     * @param context
-     * @return
+     * @param context Context
+     * @return Indicates whether network connectivity exists and it is possible to establish connections and pass data.
      */
     public static boolean checkNetworkConnected(Context context) {
         ConnectivityManager connMgr =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (wifi.isConnected()) {
-            //Toast.makeText(this, "Wifi" , Toast.LENGTH_LONG).show();
-            Log.v(TAG, "wifi.isAvailable()");
-            return true;
-        }
-
-        NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (mobile.isConnected()) {
-            //Toast.makeText(this, "Mobile 3G " , Toast.LENGTH_LONG).show();
-            Log.v(TAG, "mobile.isAvailable()");
-            return true;
-        }
-        //else {
-        //{Toast.makeText(this, "No Network " , Toast.LENGTH_LONG).show();}
-        Log.v(TAG, "No Network");
-        //}
-        return false;
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
+//
+//        NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+//        if (wifi.isConnected()) {
+//            //Toast.makeText(this, "Wifi" , Toast.LENGTH_LONG).show();
+//            Log.v(TAG, "wifi.isAvailable()");
+//            return true;
+//        }
+//
+//        NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+//        if (mobile.isConnected()) {
+//            //Toast.makeText(this, "Mobile 3G " , Toast.LENGTH_LONG).show();
+//            Log.v(TAG, "mobile.isAvailable()");
+//            return true;
+//        }
+//        //else {
+//        //{Toast.makeText(this, "No Network " , Toast.LENGTH_LONG).show();}
+//        Log.v(TAG, "No Network");
+//        //}
+//        return false;
     }
 
     private String getBody(String url) {
@@ -269,7 +270,8 @@ public class AtMoviesTVHttpHelper {
                 progItem.Name = Pattern.compile("[ ]+").matcher(progItem.Name).replaceAll(" ");
             }
 
-			/*
+            //Log.d(TAG, "programHtml = " + programHtml);
+            /*
              * <table class=at9 border="0" cellspacing="0" cellpadding="1">
 			 * <tr><td valign=top rowspan=2>播映時間：</td> <td valign=top><a
 			 * href="attv.cfm?action=todaytime&tday=2011-04-10&group_id=M#CH56"
@@ -282,7 +284,7 @@ public class AtMoviesTVHttpHelper {
             try {
                 String descHtml = programHtml;
                 descHtml = descHtml.contains("<font class=at11")
-                        ? descHtml.substring(descHtml.indexOf("<font class=at11") + 17) : descHtml;
+                        ? descHtml.substring(descHtml.indexOf("<font class=at11") + 17) : "";
                 descHtml = descHtml.contains("<img")
                         ? descHtml.substring(0, descHtml.indexOf("<img")) : descHtml;
 //                descHtml = descHtml.replace("<BR><BR><P>", "\n");
@@ -297,7 +299,6 @@ public class AtMoviesTVHttpHelper {
                 //while (descHtml.startsWith(" ")) {
                 //    descHtml = descHtml.substring(1);
                 //}
-                //Log.d(TAG, "descHtml = " + descHtml.substring(0, 200));
                 progItem.Description = descHtml;
             } catch (Exception eDesc) {
                 progItem.Description = null;
@@ -312,38 +313,48 @@ public class AtMoviesTVHttpHelper {
 			 * >04/09</a> 23:00</td> <tr><td align=center><a
 			 */
             try {
-                String repHtml = programHtml.substring(programHtml.indexOf("<font color=303099"));
+                String repHtml = programHtml.contains("<font color=303099") ?
+                        programHtml.substring(programHtml.indexOf("<font color=303099")) : "";
                 repHtml = repHtml.substring(0, repHtml.indexOf("<form"));
                 String repPattern = "<a[^>]*>([^<]*)<[^>]*>([^<]*)";
                 Matcher mRep = Pattern.compile(repPattern).matcher(repHtml);
+                Calendar now = getNowTime();
                 while (mRep.find()) {
                     //[0.5.0.19] @ 2011-06-01 change the Replays from <String> to <Calendar>
                     String replay_date = mRep.group(1).trim();
                     String replay_time = mRep.group(2).trim();
-                    Log.v(TAG, "  " + replay_date + " " + replay_time);
+                    //Log.v(TAG, "  " + replay_date + " " + replay_time);
                     Calendar cal = getNowTime();
                     try {
                         int month = Integer.parseInt(replay_date.split("/")[0]);
                         int day_of_month = Integer.parseInt(replay_date.split("/")[1]);
+                        //Log.d(TAG, String.format("%02d/%02d", month, day_of_month));
                         cal.set(Calendar.MONTH, month - 1);
                         cal.set(Calendar.DAY_OF_MONTH, day_of_month);
                         int hour = Integer.parseInt(replay_time.split(":")[0]);
                         int mins = Integer.parseInt(replay_time.split(":")[1]);
+                        //Log.d(TAG, String.format("%02d:%02d", hour, mins));
                         cal.set(Calendar.HOUR_OF_DAY, hour);
                         cal.set(Calendar.MINUTE, mins);
                         cal.set(Calendar.SECOND, 0);
                         cal.set(Calendar.MILLISECOND, 0);
-                        if (cal.before(getNowTime())) {
+                        if (cal.before(now)) {
+                            Log.w(TAG, String.format("  %02d/%02d %02d:%02d passed", month,
+                                    day_of_month, hour, mins));
                             continue;//time has passed
                         }
+                        //Log.v(TAG, String.format("  %02d/%02d %02d:%02d", month, day_of_month,
+                        //        hour, mins));
                     } catch (Exception eSpl) {
                         Log.e(TAG, "eSpl: " + eSpl.getMessage());
                         continue;
                     }
                     progItem.Replays.add(cal);
                 }
+                Log.v(TAG, "total replay: " + progItem.Replays.size());
             } catch (Exception eRep) {
-                Log.e(TAG, eRep.getMessage());
+                Log.e(TAG, "parse replay: " + eRep.getMessage());
+                progItem.Replays.clear();
             }
         } catch (Exception e) {
             Log.e(TAG, String.format("get_program_guide: %s, %s",
@@ -437,13 +448,14 @@ public class AtMoviesTVHttpHelper {
                     int minute = Integer.parseInt(time.substring(time.indexOf(":") + 1));
                     // Log.d(TAG, String.format("=== %d %02d:%02d", i, hour, minute));
                     item.Date.set(Calendar.HOUR_OF_DAY, hour);
-                    if (i == 0 && hour > 12) {
+                    if (i == 0 && hour > 12 && item.Date.get(Calendar.HOUR_OF_DAY) < 12) {
                         //[59]-- item.Date.add(Calendar.HOUR_OF_DAY, -24);
                         item.Date.add(Calendar.DAY_OF_YEAR, -1);//[59]++
                     }
                     item.Date.set(Calendar.MINUTE, minute);
                     item.Date.set(Calendar.SECOND, 0);
                     item.Date.set(Calendar.MILLISECOND, 0);
+                    //Log.d(TAG, String.format("%d: %s", i, item.toString()));
 
                     item.Url = mProgram.group(2);
                     // Log.d(TAG, item.Url);

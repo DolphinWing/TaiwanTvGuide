@@ -2,6 +2,7 @@ package dolphin.apps.TaiwanTVGuide.v7;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,12 +11,19 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Locale;
 
 import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.TVGuidePreference;
@@ -191,6 +199,12 @@ public class SettingsActivity extends PreferenceActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
+        private static final String VERSION_FILE = "Version.txt";
+        private static final String VERSION_FILE_ENCODE = "UTF-8";
+        private final static int TAPS_TO_BE_A_DEVELOPER = 5;
+        private int mDevHitCountdown = TAPS_TO_BE_A_DEVELOPER;
+        private Toast mDevHitToast = null;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -205,6 +219,83 @@ public class SettingsActivity extends PreferenceActivity {
             findPreference("dTVGuide_VersionInfo")
                     .setSummary(TVGuidePreference.getVersionName(getActivity(),
                             GeneralPreferenceFragment.class));
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+
+            mDevHitCountdown = TAPS_TO_BE_A_DEVELOPER;
+        }
+
+        @Override
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+            if (preference.getKey().equals("dTVGuide_VersionInfo")) {
+                if (--mDevHitCountdown <= 0) {
+                    showVersionTxtDialog();
+                } else {
+                    if (mDevHitToast != null) {
+                        mDevHitToast.cancel();
+                    }
+                    mDevHitToast = Toast.makeText(getActivity(), String.format(Locale.US,
+                            "Still %d to show", mDevHitCountdown), Toast.LENGTH_LONG);
+                    mDevHitToast.show();
+                }
+                return true;
+            }
+            return super.onPreferenceTreeClick(preferenceScreen, preference);
+        }
+
+        private void showVersionTxtDialog() {
+            AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.build_information)
+                    .setMessage(read_asset_text(getActivity(), VERSION_FILE, VERSION_FILE_ENCODE))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setCancelable(true)
+                    .create();
+            dialog.setCanceledOnTouchOutside(true);
+            dialog.show();
+
+//            // change AlertDialog message font size
+//            // http://stackoverflow.com/a/6563075
+//            TextView textView = (TextView) dialog.findViewById(android.R.id.message);
+//            if (textView != null) {
+//                textView.setTextSize(14);
+//            }
+        }
+
+        private static String read_asset_text(Context context, String asset_name,
+                                             String encoding)
+        {
+            try {
+                InputStreamReader sr =
+                        new InputStreamReader(context.getAssets().open(asset_name),
+                                (encoding != null) ? encoding : "UTF8");
+                //Log.i(TAG, asset_name + " " + sr.getEncoding());
+
+                int len = 0;
+                StringBuilder sb = new StringBuilder();
+
+                while (true) {//read from buffer
+                    char[] buffer = new char[1024];
+                    len = sr.read(buffer);//, size, 512);
+                    //Log.d(TAG, String.format("%d", len));
+                    if (len > 0) {
+                        sb.append(buffer);
+                    }
+                    else {
+                        break;
+                    }
+                }
+                //Log.i(TAG, String.format("  length = %d", sb.length()));
+
+                sr.close();
+                return sb.toString().trim();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
         }
     }
 

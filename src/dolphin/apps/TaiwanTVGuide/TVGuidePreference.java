@@ -14,7 +14,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 //import com.google.analytics.tracking.android.EasyTracker;
-
+@Deprecated
 public class TVGuidePreference extends PreferenceActivity {
     private static final String TAG = "TVGuidePreference";
     private boolean mValueUpdated = false;

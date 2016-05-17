@@ -78,6 +78,7 @@ public class ProgramInfoActivity extends AppCompatActivity implements OnHttpProv
                             Log.d(TAG, "send custom dimension with screen view");
                             Log.d(TAG, "  group: " + mGroup);
                             Log.d(TAG, "  channel: " + mChannelId);
+                            mTracker.setScreenName(null);//clear the screen view
                         }
                     }
                 });

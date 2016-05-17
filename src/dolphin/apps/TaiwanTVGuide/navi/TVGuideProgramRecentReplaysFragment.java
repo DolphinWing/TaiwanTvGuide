@@ -29,6 +29,7 @@ import dolphin.apps.TaiwanTVGuide.provider.ChannelItem;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
 import dolphin.apps.TaiwanTVGuide.provider.Utils;
 
+@Deprecated
 public class TVGuideProgramRecentReplaysFragment extends TVGuideFragment {
     private final static String TAG = "TVGuideProgramRecentReplaysFragment";
     private static final String IMDB_URL = "http://www.imdb.com/find?s=all&q=";

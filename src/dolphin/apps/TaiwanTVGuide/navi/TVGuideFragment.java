@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
 
+@Deprecated
 /**
  * A simple {@link Fragment} subclass.
  */

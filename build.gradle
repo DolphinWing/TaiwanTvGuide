@@ -33,8 +33,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 77
-        versionName "1.8.0"
+        versionCode 78
+        versionName "1.8.1"
         resConfigs "zh", "zh_TW"
     }
 
@@ -55,5 +55,14 @@ android {
         }
 
         //instrumentTest.setRoot('tests')
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            useProguard false
+            //http://tools.android.com/tech-docs/new-build-system/resource-shrinking
+            shrinkResources true
+        }
     }
 }

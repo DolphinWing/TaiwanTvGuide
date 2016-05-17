@@ -15,7 +15,7 @@ import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.abs.MyTabsAdapter;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
 
-
+@Deprecated
 public class TVGuideProgramABF extends FragmentActivity implements
         TVGuideProgramFragment.OnProgramDataListenter {
     private final static String TAG = "TVGuideProgramABF";

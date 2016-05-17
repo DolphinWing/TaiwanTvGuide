@@ -33,6 +33,7 @@ import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 /**
  * Created by dolphin on 2014/2/22.
  */
+@Deprecated
 public class CurrentPlayingActivity extends Activity
         /*implements ActionBar.OnNavigationListener*/ {
     private final static String TAG = "CurrentPlayingActivity";

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 
+@Deprecated
 public class MyTabsAdapter extends FragmentPagerAdapter implements
 		TabHost.OnTabChangeListener,
 		ViewPager.OnPageChangeListener

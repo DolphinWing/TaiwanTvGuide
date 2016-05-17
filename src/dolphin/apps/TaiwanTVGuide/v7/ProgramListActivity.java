@@ -105,9 +105,10 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.app_name);
-            actionBar.setHomeButtonEnabled(mDrawerLayout != null);
-            actionBar.setDisplayHomeAsUpEnabled(mDrawerLayout != null);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_action_nav_prev);
+            //actionBar.setHomeButtonEnabled(mDrawerLayout != null);
+            //actionBar.setDisplayHomeAsUpEnabled(mDrawerLayout != null);
+            //actionBar.setHomeAsUpIndicator(R.drawable.ic_action_nav_prev);
+            actionBar.setLogo(R.mipmap.ic_launcher);
         }
 
         ListView drawerList = (ListView) findViewById(R.id.category_list);
@@ -151,6 +152,8 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
 
                     if (mCheckBox != null) {
                         mCheckBox.setVisibility(checked ? View.VISIBLE : View.GONE);
+                        //now playing don't need time filter
+                        ((MyApplication)getApplication()).setShowAllPrograms(checked && mCheckBox.isChecked());
                     }
 
                     //[76]++
@@ -342,6 +345,7 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
                 HitBuilders.TimingBuilder builder = new HitBuilders.TimingBuilder()
                         .setCategory("Network")
                         .setVariable("Download")
+                        .setCustomDimension(1, mGroupId)
                         .setLabel(label)
                         .setValue(cost);
                 mTracker.send(builder.build());//[76]++
