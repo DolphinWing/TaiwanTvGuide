@@ -13,6 +13,7 @@ import android.view.Window;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ public class ProgramInfoActivity extends AppCompatActivity implements OnHttpProv
     private String mUrl, mName, mGroup, mChannelId;
 
     private Tracker mTracker;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,16 @@ public class ProgramInfoActivity extends AppCompatActivity implements OnHttpProv
                             Log.d(TAG, "  channel: " + mChannelId);
                             mTracker.setScreenName(null);//clear the screen view
                         }
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "");
+                        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Program Info");
+                        bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Action");
+                        bundle.putString("group", mGroup);
+                        bundle.putString("channel", mChannelId);
+                        if (mFirebaseAnalytics != null) {
+                            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+                        }
                     }
                 });
             }
@@ -89,6 +101,7 @@ public class ProgramInfoActivity extends AppCompatActivity implements OnHttpProv
         mTracker = application.getDefaultTracker();
         mTracker.setScreenName("Program Info");
         //mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
     @Override
@@ -116,6 +129,13 @@ public class ProgramInfoActivity extends AppCompatActivity implements OnHttpProv
                         .setLabel("detail")
                         .setValue(cost);
                 mTracker.send(builder.build());//[76]++
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Program Info");
+                bundle.putString("group", mGroup);
+                bundle.putString("channel", mChannelId);
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM_LIST, bundle);
+
                 ProgramInfoActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

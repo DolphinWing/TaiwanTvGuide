@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -29,6 +30,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,6 +75,9 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
 
     private AtMoviesTVHttpHelper mHelper;
     private Tracker mTracker;
+
+    private FirebaseRemoteConfig mFirebaseRemoteConfig;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,6 +172,13 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
                             .setAction("list mode")
                             .setLabel(mSwitch.getText().toString())
                             .build());
+
+                    //https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#constants
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mSwitch.getText().toString());
+                    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "list mode");
+                    bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Action");
+                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
                 }
             });
         }
@@ -171,8 +188,11 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
             mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                    Log.d(TAG, "SHOW ALL switch to " + checked);
                     ((MyApplication)getApplication()).setShowAllPrograms(checked);
-                    selectItem(mGroupIndex);
+                    if (mSwitch != null && mSwitch.isChecked()) {
+                        selectItem(mGroupIndex);
+                    }
                 }
             });
         }
@@ -230,6 +250,16 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
             });
         }
         registerOnHttpListener(this);
+
+        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setDeveloperModeEnabled(true)
+                .build();
+        mFirebaseRemoteConfig.setConfigSettings(configSettings);
+        mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
+        fetchDiscount();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null);
     }
 
     @Override
@@ -349,6 +379,11 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
                         .setLabel(label)
                         .setValue(cost);
                 mTracker.send(builder.build());//[76]++
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Program List");
+                bundle.putString("group", mGroupId);
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM_LIST, bundle);
 
                 ProgramListActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -490,6 +525,54 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1 && structuredJson != null) {
             outContent.setStructuredData(structuredJson);
 
+        }
+    }
+
+    /**
+     * Fetch discount from server.
+     */
+    private void fetchDiscount() {
+        long cacheExpiration = 3600; // 1 hour in seconds.
+        // If in developer mode cacheExpiration is set to 0 so each fetch will retrieve values from
+        // the server.
+        if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
+            cacheExpiration = 0;
+        }
+
+        // [START fetch_config_with_callback]
+        // cacheExpirationSeconds is set to cacheExpiration here, indicating that any previously
+        // fetched and cached config would be considered expired because it would have been fetched
+        // more than cacheExpiration seconds ago. Thus the next fetch would go to the server unless
+        // throttling is in progress. The default expiration duration is 43200 (12 hours).
+        mFirebaseRemoteConfig.fetch(cacheExpiration)
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "onFailure: " + e.getMessage());
+                    }
+                })
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Fetch Succeeded");
+                            // Once the config is successfully fetched it must be activated before
+                            // newly fetched values are returned.
+                            mFirebaseRemoteConfig.activateFetched();
+                        } else {
+                            Log.d(TAG, "Fetch failed");
+                        }
+                        updateFromServer();
+                    }
+                });
+        // [END fetch_config_with_callback]
+    }
+
+    private void updateFromServer() {
+        boolean bShowAll = mFirebaseRemoteConfig.getBoolean("show_all_programs");
+        Log.d(TAG, "show all: " + bShowAll);
+        if (mCheckBox != null) {
+            mCheckBox.setChecked(bShowAll);
         }
     }
 }

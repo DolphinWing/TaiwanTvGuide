@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "282109116520",
+    "firebase_url": "https://taiwan-tv-guide.firebaseio.com",
+    "project_id": "taiwan-tv-guide",
+    "storage_bucket": "taiwan-tv-guide.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:282109116520:android:5e211b5d1c161a4b",
+        "android_client_info": {
+          "package_name": "dolphin.apps.TaiwanTVGuide"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "282109116520-apno57l852491ocm1ad6rrragb5e18i5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dolphin.apps.TaiwanTVGuide",
+            "certificate_hash": "BB86D6E927A2306BAD126B30513611A9B747261A"
+          }
+        },
+        {
+          "client_id": "282109116520-1a6ssdvdddqminvkhtbnhqqc4bhunbkn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dolphin.apps.TaiwanTVGuide",
+            "certificate_hash": "5A90A64E4C14F6367B526B68ABEB1B7B82DFF573"
+          }
+        },
+        {
+          "client_id": "282109116520-rb1ah2aar2fiebda7dioflc4kbnv37ov.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvdBmYOAC3UA1tejE2rO90gJ7bAH5pkbA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "282109116520-rb1ah2aar2fiebda7dioflc4kbnv37ov.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

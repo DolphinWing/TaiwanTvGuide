@@ -15,9 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -47,6 +49,7 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
     private String mUrl;
 
     private Tracker mTracker;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     public void onAttach(Context context) {
@@ -79,6 +82,7 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
         }
 
         mTracker = ((MyApplication)getActivity().getApplication()).getDefaultTracker();//[76]++
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
     }
 
     @Override
@@ -143,6 +147,12 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
                     mReplays.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            Bundle bundle = new Bundle();
+                            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "");
+                            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "show replay dialog");
+                            bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Action");
+                            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+
                             showReplayDialog(programItem);
                         }
                     });
@@ -181,6 +191,8 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
             }
         } else {
             Log.e(TAG, "no data");//TODO: show no data
+            Toast.makeText(getActivity(), "no data...", Toast.LENGTH_SHORT).show();
+            getActivity().finish();
         }
     }
 
@@ -223,6 +235,12 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
                                         .setCategory("Action")
                                         .setAction("add to calendar")
                                         .build());
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "");
+                                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "add to calendar");
+                                bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Action");
+                                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
                             }
                         })
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

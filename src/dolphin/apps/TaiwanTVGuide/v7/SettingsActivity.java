@@ -17,7 +17,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -40,6 +39,10 @@ import dolphin.apps.TaiwanTVGuide.TVGuidePreference;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends PreferenceActivity {
+
+    private static final String VERSION_FILE = "Version.txt";
+    private static final String VERSION_FILE_ENCODE = "UTF-8";
+    private final static int TAPS_TO_BE_A_DEVELOPER = 5;
 
     //This API was added due to a newly discovered vulnerability.
     // Please see http://ibm.co/1bAA8kF or http://ibm.co/IDm2Es
@@ -64,15 +67,19 @@ public class SettingsActivity extends PreferenceActivity {
 
         LinearLayout root = (LinearLayout) findViewById(android.R.id.list)
                 .getParent().getParent().getParent();
-        Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
-        root.addView(bar, 0); // insert at top
-        bar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
+        if (root != null) {
+            Toolbar bar = (Toolbar) LayoutInflater.from(this)
+                    .inflate(R.layout.settings_toolbar, root, false);
+            if (bar != null) {
+                root.addView(bar, 0); // insert at top
+                bar.setNavigationOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        finish();
+                    }
+                });
             }
-        });
-
+        }
         setupSimplePreferencesScreen();
     }
 
@@ -126,9 +133,7 @@ public class SettingsActivity extends PreferenceActivity {
      * "simplified" settings UI should be shown.
      */
     private static boolean isSimplePreferences(Context context) {
-        return ALWAYS_SIMPLE_PREFS
-                || Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB
-                || !isXLargeTablet(context);
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB || !isXLargeTablet(context);
     }
 
     /**
@@ -193,15 +198,34 @@ public class SettingsActivity extends PreferenceActivity {
                         .getString(preference.getKey(), ""));
     }
 
+    private int mDevHitCountdown = TAPS_TO_BE_A_DEVELOPER;
+    private Toast mDevHitToast = null;
+
+    @Override
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+        if (preference.getKey().equals("dTVGuide_VersionInfo")) {
+            if (--mDevHitCountdown <= 0) {
+                showVersionTxtDialog(this);
+            } else {
+                if (mDevHitToast != null) {
+                    mDevHitToast.cancel();
+                }
+                mDevHitToast = Toast.makeText(this, String.format(Locale.US,
+                        "Still %d to show", mDevHitCountdown), Toast.LENGTH_LONG);
+                mDevHitToast.show();
+            }
+            return true;
+        }
+        return super.onPreferenceTreeClick(preferenceScreen, preference);
+    }
+
     /**
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
-        private static final String VERSION_FILE = "Version.txt";
-        private static final String VERSION_FILE_ENCODE = "UTF-8";
-        private final static int TAPS_TO_BE_A_DEVELOPER = 5;
+
         private int mDevHitCountdown = TAPS_TO_BE_A_DEVELOPER;
         private Toast mDevHitToast = null;
 
@@ -232,7 +256,7 @@ public class SettingsActivity extends PreferenceActivity {
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
             if (preference.getKey().equals("dTVGuide_VersionInfo")) {
                 if (--mDevHitCountdown <= 0) {
-                    showVersionTxtDialog();
+                    showVersionTxtDialog(getActivity());
                 } else {
                     if (mDevHitToast != null) {
                         mDevHitToast.cancel();
@@ -245,58 +269,59 @@ public class SettingsActivity extends PreferenceActivity {
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
         }
+    }
 
-        private void showVersionTxtDialog() {
-            AlertDialog dialog = new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.build_information)
-                    .setMessage(read_asset_text(getActivity(), VERSION_FILE, VERSION_FILE_ENCODE))
-                    .setPositiveButton(android.R.string.ok, null)
-                    .setCancelable(true)
-                    .create();
-            dialog.setCanceledOnTouchOutside(true);
-            dialog.show();
+    static AlertDialog mVersionDialog;
 
-//            // change AlertDialog message font size
-//            // http://stackoverflow.com/a/6563075
-//            TextView textView = (TextView) dialog.findViewById(android.R.id.message);
-//            if (textView != null) {
-//                textView.setTextSize(14);
-//            }
+    static void showVersionTxtDialog(Context context) {
+        if (mVersionDialog != null) {
+            return;
         }
-
-        private static String read_asset_text(Context context, String asset_name,
-                                             String encoding)
-        {
-            try {
-                InputStreamReader sr =
-                        new InputStreamReader(context.getAssets().open(asset_name),
-                                (encoding != null) ? encoding : "UTF8");
-                //Log.i(TAG, asset_name + " " + sr.getEncoding());
-
-                int len = 0;
-                StringBuilder sb = new StringBuilder();
-
-                while (true) {//read from buffer
-                    char[] buffer = new char[1024];
-                    len = sr.read(buffer);//, size, 512);
-                    //Log.d(TAG, String.format("%d", len));
-                    if (len > 0) {
-                        sb.append(buffer);
+        mVersionDialog = new AlertDialog.Builder(context)
+                .setTitle(R.string.build_information)
+                .setMessage(read_asset_text(context, VERSION_FILE, VERSION_FILE_ENCODE))
+                .setPositiveButton(android.R.string.ok, null)
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        mVersionDialog = null;
                     }
-                    else {
-                        break;
-                    }
+                })
+                .setCancelable(true)
+                .create();
+        mVersionDialog.setCanceledOnTouchOutside(true);
+        mVersionDialog.show();
+    }
+
+    private static String read_asset_text(Context context, String asset_name, String encoding) {
+        try {
+            InputStreamReader sr =
+                    new InputStreamReader(context.getAssets().open(asset_name),
+                            (encoding != null) ? encoding : "UTF8");
+            //Log.i(TAG, asset_name + " " + sr.getEncoding());
+
+            int len = 0;
+            StringBuilder sb = new StringBuilder();
+
+            while (true) {//read from buffer
+                char[] buffer = new char[1024];
+                len = sr.read(buffer);//, size, 512);
+                //Log.d(TAG, String.format("%d", len));
+                if (len > 0) {
+                    sb.append(buffer);
+                } else {
+                    break;
                 }
-                //Log.i(TAG, String.format("  length = %d", sb.length()));
-
-                sr.close();
-                return sb.toString().trim();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+            //Log.i(TAG, String.format("  length = %d", sb.length()));
 
-            return null;
+            sr.close();
+            return sb.toString().trim();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        return null;
     }
 
 }
