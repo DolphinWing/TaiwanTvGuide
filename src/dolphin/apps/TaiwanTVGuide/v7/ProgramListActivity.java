@@ -175,10 +175,12 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
 
                     //https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#constants
                     Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mSwitch.getText().toString());
-                    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "list mode");
+                    //bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mSwitch.getText().toString());
+                    //bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "list mode");
                     bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Action");
-                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+                    //mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+                    bundle.putString("mode", mSwitch.getText().toString());
+                    mFirebaseAnalytics.logEvent("list_mode", bundle);
                 }
             });
         }
@@ -381,9 +383,11 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
                 mTracker.send(builder.build());//[76]++
 
                 Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Program List");
+                bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Action");
                 bundle.putString("group", mGroupId);
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM_LIST, bundle);
+                //bundle.putLong(FirebaseAnalytics.Param.VALUE, cost);
+                //mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM_LIST, bundle);
+                mFirebaseAnalytics.logEvent("program_list", bundle);
 
                 ProgramListActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -554,6 +558,12 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+                        if (mFirebaseAnalytics != null) {
+                            Bundle bundle = new Bundle();
+                            bundle.putBoolean("task_result", task.isSuccessful());
+                            bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Action");
+                            mFirebaseAnalytics.logEvent("remote_config", bundle);
+                        }
                         if (task.isSuccessful()) {
                             Log.d(TAG, "Fetch Succeeded");
                             // Once the config is successfully fetched it must be activated before

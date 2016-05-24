@@ -122,6 +122,9 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
                     mEngTitle.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            Bundle bundle = new Bundle();
+                            bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Action");
+                            mFirebaseAnalytics.logEvent("show_imdb", bundle);
                             Utils.startImdbActivity(getActivity(), title);
                         }
                     });
@@ -148,10 +151,11 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
                         @Override
                         public void onClick(View view) {
                             Bundle bundle = new Bundle();
-                            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "");
-                            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "show replay dialog");
+                            //bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "");
+                            //bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "show replay dialog");
                             bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Action");
-                            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+                            //mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+                            mFirebaseAnalytics.logEvent("show_replay_dialog", bundle);
 
                             showReplayDialog(programItem);
                         }
@@ -167,19 +171,6 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
                     mGoToUrl.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-//                        Intent intent = new Intent(Intent.ACTION_VIEW);
-//                        intent.setData(Uri.parse(AtMoviesTVHttpHelper.ATMOVIES_TV_URL + "/" + mUrl));
-//
-//                        //add Chrome Custom Tabs
-//                        Bundle extras = new Bundle();
-//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-//                            extras.putBinder(Utils.EXTRA_CUSTOM_TABS_SESSION, null);
-//                        }
-//                        extras.putInt(Utils.EXTRA_CUSTOM_TABS_TOOLBAR_COLOR,
-//                                getResources().getColor(android.R.color.holo_orange_dark));
-//                        intent.putExtras(extras);
-//
-//                        startActivity(intent);
                             Utils.startBrowserActivity(getActivity(),
                                     AtMoviesTVHttpHelper.ATMOVIES_TV_URL + "/" + mUrl);
                         }
@@ -237,10 +228,11 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
                                         .build());
 
                                 Bundle bundle = new Bundle();
-                                bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "");
-                                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "add to calendar");
+                                //bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "");
+                                //bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "add to calendar");
                                 bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Action");
-                                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+                                //mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+                                mFirebaseAnalytics.logEvent("add_to_calendar", bundle);
                             }
                         })
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

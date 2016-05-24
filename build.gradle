@@ -15,7 +15,6 @@ allprojects {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
 
 dependencies {
     //compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
@@ -40,8 +39,8 @@ android {
         applicationId "dolphin.apps.TaiwanTVGuide"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 79
-        versionName "1.8.2"
+        versionCode 80
+        versionName "1.8.3"
         resConfigs "zh", "zh_TW"
     }
 
@@ -73,3 +72,5 @@ android {
         }
     }
 }
+
+apply plugin: 'com.google.gms.google-services'

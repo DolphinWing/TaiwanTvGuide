@@ -84,13 +84,14 @@ public class ProgramInfoActivity extends AppCompatActivity implements OnHttpProv
                         }
 
                         Bundle bundle = new Bundle();
-                        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "");
-                        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Program Info");
+                        //bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "");
+                        //bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Program Info");
                         bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Action");
                         bundle.putString("group", mGroup);
                         bundle.putString("channel", mChannelId);
                         if (mFirebaseAnalytics != null) {
-                            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+                            //mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+                            mFirebaseAnalytics.logEvent("program_info", bundle);
                         }
                     }
                 });
@@ -131,10 +132,11 @@ public class ProgramInfoActivity extends AppCompatActivity implements OnHttpProv
                 mTracker.send(builder.build());//[76]++
 
                 Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Program Info");
+                //bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Program Info");
                 bundle.putString("group", mGroup);
                 bundle.putString("channel", mChannelId);
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM_LIST, bundle);
+                //mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM_LIST, bundle);
+                //mFirebaseAnalytics.logEvent("Action/Program Info", bundle);
 
                 ProgramInfoActivity.this.runOnUiThread(new Runnable() {
                     @Override
