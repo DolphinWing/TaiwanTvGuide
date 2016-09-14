@@ -84,8 +84,9 @@ public class ProgramListFragment extends Fragment implements OnHttpListener {
         //mRecyclerView.setVisibility(View.VISIBLE);
         if (data != null && getActivity() != null) {
             ArrayList<ChannelItem> channelItems = (ArrayList<ChannelItem>) data;
+            MyApplication application = (MyApplication) getActivity().getApplication();
             ProgramListAdapter adapter = new ProgramListAdapter(getActivity(), channelItems,
-                    ((MyApplication)getActivity().getApplication()).isShowAllPrograms());
+                    !application.isPreviewDateToday() || application.isShowAllPrograms());
             //mAdapter.setHeaderDisplay(LayoutManager.LayoutParams.HEADER_STICKY);
             if (mRecyclerView != null) {
                 mRecyclerView.setAdapter(adapter);

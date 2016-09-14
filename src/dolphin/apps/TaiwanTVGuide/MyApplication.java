@@ -1,8 +1,11 @@
 package dolphin.apps.TaiwanTVGuide;
 
 import android.app.Application;
+import android.text.format.DateUtils;
 
 import com.google.android.gms.analytics.Tracker;
+
+import java.util.Calendar;
 
 /**
  * Created by jimmyhu on 2016/5/10.
@@ -35,5 +38,19 @@ public class MyApplication extends Application {
 
     public void setShowAllPrograms(boolean visible) {
         mShowAll = visible;
+    }
+
+    private Calendar mPreviewDate;
+
+    public void setPreviewDate(Calendar cal) {
+        mPreviewDate = cal;
+    }
+
+    public Calendar getPreviewDate() {
+        return mPreviewDate;
+    }
+
+    public boolean isPreviewDateToday() {
+        return DateUtils.isToday(getPreviewDate().getTimeInMillis());
     }
 }

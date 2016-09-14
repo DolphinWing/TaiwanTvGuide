@@ -232,6 +232,7 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
 
         mHelper = new AtMoviesTVHttpHelper(this);
         mPreviewDate = AtMoviesTVHttpHelper.getNowTime();
+        ((MyApplication) getApplication()).setPreviewDate(mPreviewDate);
 
         if (AUTO_SELECT) {
             if (mDrawerLayout != null) {
@@ -298,6 +299,7 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        MyApplication application = (MyApplication) getApplication();
         switch (id) {
             case android.R.id.home:
             case R.id.action_search_menu://[62]++
@@ -312,11 +314,13 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
                 mPreviewDate.add(Calendar.HOUR_OF_DAY, -24);
                 selectItem(mGroupIndex);
                 //mTitle = new SimpleDateFormat("MM/dd", Locale.TAIWAN).format(mPreviewDate.getTime());
+                application.setPreviewDate(mPreviewDate);
                 return true;
             case R.id.preview_next_day:
                 mPreviewDate.add(Calendar.HOUR_OF_DAY, 24);
                 selectItem(mGroupIndex);
                 //Title = new SimpleDateFormat("MM/dd", Locale.TAIWAN).format(mPreviewDate.getTime());
+                application.setPreviewDate(mPreviewDate);
                 return true;
             case R.id.preference: {
                 Intent intent2 = new Intent();
@@ -357,6 +361,8 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
                 ArrayList<ChannelItem> channelItems = null;
                 switch (mListType) {
                     case AtMoviesTVHttpHelper.TYPE_NOW_PLAYING:
+                        mPreviewDate = AtMoviesTVHttpHelper.getNowTime();
+                        ((MyApplication) getApplication()).setPreviewDate(mPreviewDate);
                         channelItems = mHelper.get_showtime_list(mGroupId);
                         break;
                     case AtMoviesTVHttpHelper.TYPE_ALL_DAY:
