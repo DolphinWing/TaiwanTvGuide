@@ -5,10 +5,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,6 +14,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import dolphin.apps.TaiwanTVGuide.R;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class AtMoviesTVHttpHelper {
     private static final String TAG = "AtMoviesTVHttpHelper";
@@ -42,13 +41,16 @@ public class AtMoviesTVHttpHelper {
         _init(context);
     }
 
-    public boolean _init(Context context) {
+    private boolean _init(Context context) {
         mContext = context;
         // Log.d(TAG, String.format("_init %s",
         // mContext.getString(R.string.app_name)));
-        mClient = new OkHttpClient();
-        mClient.setConnectTimeout(3, TimeUnit.SECONDS);// connect timeout
-        mClient.setReadTimeout(60, TimeUnit.SECONDS);// socket timeout
+        mClient = new OkHttpClient.Builder()
+                .connectTimeout(3, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .build();
+        //mClient.setConnectTimeout(3, TimeUnit.SECONDS);// connect timeout
+        //mClient.setReadTimeout(60, TimeUnit.SECONDS);// socket timeout
         return checkNetworkConnected(mContext);
     }
 
@@ -448,9 +450,16 @@ public class AtMoviesTVHttpHelper {
                     int minute = Integer.parseInt(time.substring(time.indexOf(":") + 1));
                     // Log.d(TAG, String.format("=== %d %02d:%02d", i, hour, minute));
                     item.Date.set(Calendar.HOUR_OF_DAY, hour);
-                    if (i == 0 && hour > 12 && item.Date.get(Calendar.HOUR_OF_DAY) < 12) {
-                        //[59]-- item.Date.add(Calendar.HOUR_OF_DAY, -24);
-                        item.Date.add(Calendar.DAY_OF_YEAR, -1);//[59]++
+                    //[84]++@2016-11-08, before 12' the last program didn't show correctly
+                    if (item.Date.get(Calendar.HOUR_OF_DAY) > 12) {//today's last show may pass 12'
+                        if (i == 1 && hour < 12) {//next show is tomorrow
+                            item.Date.add(Calendar.DAY_OF_YEAR, 1);
+                        }
+                    } else {//today's first show is yesterday's last show
+                        if (i == 0 && hour > 12) {//yesterday show
+                            //[59]-- item.Date.add(Calendar.HOUR_OF_DAY, -24);
+                            item.Date.add(Calendar.DAY_OF_YEAR, -1);//[59]++
+                        }
                     }
                     item.Date.set(Calendar.MINUTE, minute);
                     item.Date.set(Calendar.SECOND, 0);

@@ -2,7 +2,7 @@
 https://play.google.com/store/apps/details?id=dolphin.apps.TaiwanTVGuide
 https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 
-支援功能(最新: 1.8.2)
+支援功能(最新: 1.8.6)
 ● 從開眼電影網下載本日節目表
 ● 現正播放以及下一部即將播放的電影
 ● 支援IMDb app (if has)
@@ -10,6 +10,17 @@ https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 注意：由於開眼電影網的網站有時候載入時間較長，故有時會出現無法載入的狀況，請稍後再重試看看
 
 --
+[84] @ 2016-11-08
+    fix today current program before 12pm may not show correctly
+
+[83] @ 2016-10-24
+    fix show all check
+    update all libraries
+
+[82] @ 2016-10-20
+    change icon
+    update build tools
+
 [79] @ 2016-05-21
     fix small screen click on version
     add some other new test features from Firebase (5/18 released)

@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.3'
+        classpath 'com.android.tools.build:gradle:2.2.2'
         classpath 'com.google.gms:google-services:3.0.0'
     }
 }
@@ -19,28 +19,28 @@ apply plugin: 'com.android.application'
 dependencies {
     //compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     //compile 'com.squareup.okio:okio:1.3.0'
-    compile 'com.android.support:support-v4:24.2.0'
-    compile 'com.android.support:recyclerview-v7:24.2.0'
-    compile 'com.tonicartos:superslim:0.4.5'
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.squareup.okhttp:okhttp:2.5.0'
-    compile 'com.google.android.gms:play-services-analytics:9.4.0'
+    compile 'com.android.support:support-v4:25.0.0'
+    compile 'com.android.support:recyclerview-v7:25.0.0'
+    compile 'com.tonicartos:superslim:0.4.13'
+    compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.google.android.gms:play-services-analytics:9.8.0'
 
     //firebase
-    compile 'com.google.firebase:firebase-analytics:9.4.0'
-    compile 'com.google.firebase:firebase-config:9.4.0'
+    compile 'com.google.firebase:firebase-analytics:9.8.0'
+    compile 'com.google.firebase:firebase-config:9.8.0'
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.3'
+    compileSdkVersion 24
+    buildToolsVersion '24.0.3'
 
     defaultConfig {
         applicationId "dolphin.apps.TaiwanTVGuide"
         minSdkVersion 14
-        targetSdkVersion 23
-        versionCode 81
-        versionName "1.8.4"
+        targetSdkVersion 24
+        versionCode 84
+        versionName "1.8.6"
         resConfigs "zh", "zh_TW"
     }
 
@@ -68,7 +68,9 @@ android {
             minifyEnabled false
             useProguard false
             //http://tools.android.com/tech-docs/new-build-system/resource-shrinking
-            shrinkResources true
+            shrinkResources false
+            //gradle 2.2.0 seems to have a bug with shrinkResources
+            //http://stackoverflow.com/a/36543170/2673859
         }
     }
 }

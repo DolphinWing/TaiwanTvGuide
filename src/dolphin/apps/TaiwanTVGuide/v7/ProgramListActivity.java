@@ -152,6 +152,15 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
                 @Override
                 public void onCheckedChanged(CompoundButton button, boolean checked) {
                     invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+
+                    //[84]++ change before update data
+                    if (mCheckBox != null) {
+                        mCheckBox.setVisibility(checked ? View.VISIBLE : View.GONE);
+                        //now playing don't need time filter
+                        boolean showAll = !checked || mCheckBox.isChecked();
+                        ((MyApplication)getApplication()).setShowAllPrograms(showAll);
+                    }
+
                     mListType = checked ? AtMoviesTVHttpHelper.TYPE_ALL_DAY :
                             AtMoviesTVHttpHelper.TYPE_NOW_PLAYING;
                     selectItem(mGroupIndex);
@@ -159,12 +168,6 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
 //                    mSwitch.setText(checked ? mSwitch.getTextOn() : mSwitch.getTextOff());
 //                }
                     mSwitch.setText(checked ? R.string.all_show : R.string.now_playing);
-
-                    if (mCheckBox != null) {
-                        mCheckBox.setVisibility(checked ? View.VISIBLE : View.GONE);
-                        //now playing don't need time filter
-                        ((MyApplication)getApplication()).setShowAllPrograms(checked && mCheckBox.isChecked());
-                    }
 
                     //[76]++
                     mTracker.send(new HitBuilders.EventBuilder()
