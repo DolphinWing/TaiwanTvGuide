@@ -376,6 +376,7 @@ public class AtMoviesTVHttpHelper {
         Log.v(TAG, url);
         ArrayList<ChannelItem> list = null;
 
+        Calendar now = getNowTime();
         long startTime = System.currentTimeMillis();
         try {
             String response = getBody(url);// , ENCODE_BIG5);
@@ -448,10 +449,11 @@ public class AtMoviesTVHttpHelper {
                     // Log.d(TAG, String.format("=== %s", time));
                     int hour = Integer.parseInt(time.substring(0, time.indexOf(":")));
                     int minute = Integer.parseInt(time.substring(time.indexOf(":") + 1));
-                    // Log.d(TAG, String.format("=== %d %02d:%02d", i, hour, minute));
+                    //Log.d(TAG, String.format("=== %d %02d:%02d", i, hour, minute));
                     item.Date.set(Calendar.HOUR_OF_DAY, hour);
                     //[84]++@2016-11-08, before 12' the last program didn't show correctly
-                    if (item.Date.get(Calendar.HOUR_OF_DAY) > 12) {//today's last show may pass 12'
+                    //[85]++@2016-11-14, fix get current time to check
+                    if (now.get(Calendar.HOUR_OF_DAY) > 12) {//today's last show may pass 12'
                         if (i == 1 && hour < 12) {//next show is tomorrow
                             item.Date.add(Calendar.DAY_OF_YEAR, 1);
                         }
@@ -461,6 +463,7 @@ public class AtMoviesTVHttpHelper {
                             item.Date.add(Calendar.DAY_OF_YEAR, -1);//[59]++
                         }
                     }
+                    //Log.d(TAG, String.format("day=%d", item.Date.get(Calendar.DAY_OF_MONTH)));
                     item.Date.set(Calendar.MINUTE, minute);
                     item.Date.set(Calendar.SECOND, 0);
                     item.Date.set(Calendar.MILLISECOND, 0);

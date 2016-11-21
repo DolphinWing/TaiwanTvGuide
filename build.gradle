@@ -39,7 +39,7 @@ android {
         applicationId "dolphin.apps.TaiwanTVGuide"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 84
+        versionCode 86
         versionName "1.8.6"
         resConfigs "zh", "zh_TW"
     }

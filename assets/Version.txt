@@ -10,6 +10,12 @@ https://play.google.com/apps/testing/dolphin.apps.TaiwanTVGuide
 注意：由於開眼電影網的網站有時候載入時間較長，故有時會出現無法載入的狀況，請稍後再重試看看
 
 --
+[86] @ 2016-11-21
+    fix showtime time incorrect
+
+[85] @ 2016-11-14
+    fix the last program may not show correctly before midnight
+
 [84] @ 2016-11-08
     fix today current program before 12pm may not show correctly
 
