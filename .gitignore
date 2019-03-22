@@ -24,7 +24,12 @@ local.properties
 proguard/
 proguard_logs/
 
-build/
-.idea/
-.gradle/
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
 *.iml
+.idea/
+app/build
