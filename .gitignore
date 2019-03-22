@@ -24,3 +24,7 @@ local.properties
 proguard/
 proguard_logs/
 
+build/
+.idea/
+.gradle/
+*.iml
