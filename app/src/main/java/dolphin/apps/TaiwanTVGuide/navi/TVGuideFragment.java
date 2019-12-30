@@ -2,7 +2,7 @@ package dolphin.apps.TaiwanTVGuide.navi;
 
 
 import android.app.ActionBar;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
 

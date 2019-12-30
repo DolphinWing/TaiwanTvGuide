@@ -3,8 +3,6 @@ package dolphin.apps.TaiwanTVGuide;
 import android.app.Application;
 import android.text.format.DateUtils;
 
-import com.google.android.gms.analytics.Tracker;
-
 import java.util.Calendar;
 
 /**
@@ -13,22 +11,22 @@ import java.util.Calendar;
  * For Analytics
  */
 public class MyApplication extends Application {
-    private Tracker mTracker;
+//    private Tracker mTracker;
+//
+//    @Override
+//    public void onCreate() {
+//        super.onCreate();
+//
+//        AnalyticsTrackers.initialize(this);
+//    }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        AnalyticsTrackers.initialize(this);
-    }
-
-    //https://developers.google.com/analytics/devguides/collection/android/v4/#application
-    synchronized public Tracker getDefaultTracker() {
-        if (mTracker == null) {
-            mTracker = AnalyticsTrackers.getInstance().get(AnalyticsTrackers.Target.APP);
-        }
-        return mTracker;
-    }
+//    //https://developers.google.com/analytics/devguides/collection/android/v4/#application
+//    synchronized public Tracker getDefaultTracker() {
+//        if (mTracker == null) {
+//            mTracker = AnalyticsTrackers.getInstance().get(AnalyticsTrackers.Target.APP);
+//        }
+//        return mTracker;
+//    }
 
     private boolean mShowAll = false;
 

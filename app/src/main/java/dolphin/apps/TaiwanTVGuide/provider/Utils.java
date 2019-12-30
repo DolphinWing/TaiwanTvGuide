@@ -158,7 +158,7 @@ public class Utils {
 
     public static int getPreferenceGroupIndex(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return (!preferences.contains("dTVGuide_DefaultGroup")) ? 5
-                : Integer.parseInt(preferences.getString("dTVGuide_DefaultGroup", "5"));
+        return (!preferences.contains("dTvGuideDefaultGroupIndex")) ? 3
+                : Integer.parseInt(preferences.getString("dTvGuideDefaultGroupIndex", "3"));
     }
 }

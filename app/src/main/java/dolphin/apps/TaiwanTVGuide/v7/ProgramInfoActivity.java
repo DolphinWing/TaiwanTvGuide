@@ -2,20 +2,17 @@ package dolphin.apps.TaiwanTVGuide.v7;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import dolphin.apps.TaiwanTVGuide.MyApplication;
+import androidx.appcompat.app.AppCompatActivity;
 import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
@@ -28,7 +25,6 @@ public class ProgramInfoActivity extends AppCompatActivity implements OnHttpProv
     private AtMoviesTVHttpHelper mHelper;
     private String mUrl, mName, mGroup, mChannelId;
 
-    private Tracker mTracker;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
@@ -69,17 +65,6 @@ public class ProgramInfoActivity extends AppCompatActivity implements OnHttpProv
                         mChannelId = bundle.getString(AtMoviesTVHttpHelper.KEY_CHANNEL_ID);
                         download(mUrl, mName, mGroup, mChannelId);
 
-                        if (mTracker != null) {
-                            HitBuilders.ScreenViewBuilder builder = new HitBuilders.ScreenViewBuilder()
-                                    .setCustomDimension(1, mGroup)
-                                    .setCustomDimension(2, mChannelId);
-                            mTracker.send(builder.build());
-                            Log.d(TAG, "send custom dimension with screen view");
-                            Log.d(TAG, "  group: " + mGroup);
-                            Log.d(TAG, "  channel: " + mChannelId);
-                            mTracker.setScreenName(null);//clear the screen view
-                        }
-
                         Bundle bundle = new Bundle();
                         //bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "");
                         //bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Program Info");
@@ -95,10 +80,6 @@ public class ProgramInfoActivity extends AppCompatActivity implements OnHttpProv
             }
         }
 
-        MyApplication application = (MyApplication) getApplication();
-        mTracker = application.getDefaultTracker();
-        mTracker.setScreenName("Program Info");
-        //mTracker.send(new HitBuilders.ScreenViewBuilder().build());
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
@@ -121,12 +102,6 @@ public class ProgramInfoActivity extends AppCompatActivity implements OnHttpProv
                 final ProgramItem programItem = mHelper.get_program_guide(dataUrl);
                 long cost = System.currentTimeMillis() - start;
                 Log.d(TAG, String.format("download info cost %d ms", cost));
-                HitBuilders.TimingBuilder builder = new HitBuilders.TimingBuilder()
-                        .setCategory("Network")
-                        .setVariable("Download")
-                        .setLabel("detail")
-                        .setValue(cost);
-                mTracker.send(builder.build());//[76]++
 
                 Bundle bundle = new Bundle();
                 //bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Program Info");

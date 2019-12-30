@@ -8,12 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,8 +22,6 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -45,6 +37,12 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
 import dolphin.apps.TaiwanTVGuide.MyApplication;
 import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
@@ -74,7 +72,6 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
     private String mUrl = URL_BASE;
 
     private AtMoviesTVHttpHelper mHelper;
-    private Tracker mTracker;
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -86,12 +83,6 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                 .permitNetwork()
                 .build());
-
-        //[76]++
-        MyApplication application = (MyApplication) getApplication();
-        mTracker = application.getDefaultTracker();
-        mTracker.setScreenName("Program List");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         //set default locale
         //http://stackoverflow.com/a/4239680
@@ -164,17 +155,8 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
                     mListType = checked ? AtMoviesTVHttpHelper.TYPE_ALL_DAY :
                             AtMoviesTVHttpHelper.TYPE_NOW_PLAYING;
                     selectItem(mGroupIndex);
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                    mSwitch.setText(checked ? mSwitch.getTextOn() : mSwitch.getTextOff());
-//                }
-                    mSwitch.setText(checked ? R.string.all_show : R.string.now_playing);
 
-                    //[76]++
-                    mTracker.send(new HitBuilders.EventBuilder()
-                            .setCategory("Action")
-                            .setAction("list mode")
-                            .setLabel(mSwitch.getText().toString())
-                            .build());
+                    mSwitch.setText(checked ? R.string.all_show : R.string.now_playing);
 
                     //https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#constants
                     Bundle bundle = new Bundle();
@@ -383,13 +365,6 @@ public class ProgramListActivity extends AppCompatActivity implements OnHttpProv
                 }
 
                 final long cost = System.currentTimeMillis() - start;
-                HitBuilders.TimingBuilder builder = new HitBuilders.TimingBuilder()
-                        .setCategory("Network")
-                        .setVariable("Download")
-                        .setCustomDimension(1, mGroupId)
-                        .setLabel(label)
-                        .setValue(cost);
-                mTracker.send(builder.build());//[76]++
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Action");

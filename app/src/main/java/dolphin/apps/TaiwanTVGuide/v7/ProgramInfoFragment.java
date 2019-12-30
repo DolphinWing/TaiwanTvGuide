@@ -3,11 +3,7 @@ package dolphin.apps.TaiwanTVGuide.v7;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,8 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
@@ -26,7 +20,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import dolphin.apps.TaiwanTVGuide.MyApplication;
+import androidx.fragment.app.Fragment;
 import dolphin.apps.TaiwanTVGuide.R;
 import dolphin.apps.TaiwanTVGuide.provider.AtMoviesTVHttpHelper;
 import dolphin.apps.TaiwanTVGuide.provider.ProgramItem;
@@ -48,7 +42,7 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
     private String mProgramName;
     private String mUrl;
 
-    private Tracker mTracker;
+//    private Tracker mTracker;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
@@ -73,7 +67,7 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getActivity().getIntent() != null) {
+        if (getActivity() != null && getActivity().getIntent() != null) {
             Bundle bundle = getActivity().getIntent().getExtras();
             if (bundle != null) {
                 mProgramName = bundle.getString(AtMoviesTVHttpHelper.KEY_PROGRAM_NAME);
@@ -81,8 +75,8 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
             }
         }
 
-        mTracker = ((MyApplication)getActivity().getApplication()).getDefaultTracker();//[76]++
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
+        if (getActivity() != null)
+            mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
     }
 
     @Override
@@ -110,7 +104,7 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
 
     @Override
     public void onHttpUpdated(Object data) {
-        if (data != null && data instanceof ProgramItem) {
+        if (data instanceof ProgramItem) {
             final ProgramItem programItem = (ProgramItem) data;
             if (mChtTitle != null) {
                 mChtTitle.setText(mProgramName);
@@ -180,7 +174,7 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
                     mGoToUrl.setVisibility(View.GONE);
                 }
             }
-        } else {
+        } else if (getActivity() != null) {
             Log.e(TAG, "no data");//TODO: show no data
             Toast.makeText(getActivity(), "no data...", Toast.LENGTH_SHORT).show();
             getActivity().finish();
@@ -203,12 +197,6 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
             list.add(str);
         }
 
-        //[76]++
-        mTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("Action")
-                .setAction("replay list")
-                .build());
-
         final ProgramItem item = programItem;
         new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.recent_replays)
@@ -220,12 +208,6 @@ public class ProgramInfoFragment extends Fragment implements OnHttpListener {
                                 //click recent replay and add to calendar
                                 item.Date = item.Replays.get(i);
                                 Utils.startAddingCalendar(getActivity(), null, item);
-
-                                //[76]++
-                                mTracker.send(new HitBuilders.EventBuilder()
-                                        .setCategory("Action")
-                                        .setAction("add to calendar")
-                                        .build());
 
                                 Bundle bundle = new Bundle();
                                 //bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "");
